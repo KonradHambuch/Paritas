@@ -1,0 +1,17 @@
+{
+  // Assets-only Worker: there is no `main`, so no Worker code runs and every
+  // request is served straight from the built files. This replaces the
+  // "Build output directory" field that the classic Pages UI had — on Workers
+  // Builds the output directory is declared here instead.
+  "name": "paritas",
+  "compatibility_date": "2026-09-03",
+  "assets": {
+    "directory": "./dist/",
+    // Serve our own 404.html with a 404 status. NOT
+    // "single-page-application", which would return index.html with a 200 for
+    // every unknown path and let search engines index infinite duplicates.
+    "not_found_handling": "404-page",
+    // /hu/index.html is served at /hu/ ; 404.html is served at /404
+    "html_handling": "auto-trailing-slash"
+  }
+}

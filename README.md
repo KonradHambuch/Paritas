@@ -3,7 +3,7 @@
 Bilingual (EN/HU) static marketing site for Paritas — transfer pricing
 documentation and financial due diligence for cross-border startups in CEE.
 
-Astro 5 · Tailwind 4 · TypeScript · static output, deployed on Cloudflare Pages.
+Astro 5 · Tailwind 4 · TypeScript · static output, deployed on Cloudflare as an assets-only Worker.
 
 ## Commands
 

@@ -1,22 +1,36 @@
-# Cloudflare Pages reads this file from the deployment root.
-# Compression (brotli/gzip) is handled at the edge, so it is not configured here.
+# Cloudflare reads this from the deployment root. Compression is handled at the
+# edge, so it is not configured here.
+#
+# IMPORTANT: every matching rule is applied and same-name headers are
+# CONCATENATED, not overridden. A `Cache-Control` in a `/*` catch-all would
+# append itself to the one below and produce
+# "max-age=31536000, immutable, max-age=0, must-revalidate" on hashed assets.
+# So the catch-all carries security headers only, and Cache-Control is set per
+# path — there are only three HTML pages, so listing them is cheap and exact.
 
-/_astro/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/fonts/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/og-*.png
-  Cache-Control: public, max-age=86400
-
-/favicon.svg
-  Cache-Control: public, max-age=86400
-
-# HTML revalidates rather than being cached hard, so a redeploy is visible
-# immediately while repeat visits still get a 304 instead of a full download.
 /*
-  Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=()
+
+# Content-hashed by Astro, so safe to cache for a year.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML revalidates: a redeploy is visible immediately, and a repeat visit still
+# gets a 304 rather than a full download.
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/hu/
+  Cache-Control: public, max-age=0, must-revalidate
+/404
+  Cache-Control: public, max-age=0, must-revalidate
+
+/favicon.svg
+  Cache-Control: public, max-age=86400
+/og-en.png
+  Cache-Control: public, max-age=86400
+/og-hu.png
+  Cache-Control: public, max-age=86400
+/robots.txt
+  Cache-Control: public, max-age=3600
