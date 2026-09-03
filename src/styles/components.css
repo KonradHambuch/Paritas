@@ -1,0 +1,265 @@
+/* Patterns whose state is toggled by script or by a native element, so they
+   cannot live purely as utility classes in the markup. Everything else is
+   Tailwind utilities in the .astro files. */
+
+@layer components {
+  .wrap {
+    max-width: var(--container-wrap);
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  .section-y {
+    padding-block: clamp(3.5rem, 8vw, 6.5rem);
+  }
+
+  /* ── buttons ─────────────────────────────────────────────────── */
+  .btn {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    padding: 0.75rem 1.375rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    transition:
+      transform 0.12s ease,
+      box-shadow 0.12s ease,
+      background-color 0.12s ease;
+  }
+
+  .btn:hover {
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-strong);
+    border: 1.5px solid currentcolor;
+  }
+
+  .btn-ghost:hover {
+    background: var(--text-strong);
+    color: var(--surface);
+  }
+
+  .btn-sm {
+    padding: 0.5625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* ── cards ───────────────────────────────────────────────────── */
+  .card {
+    position: relative;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 1.625rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  /* The "one spine" motif: a hairline that fades out along the top edge. */
+  .card-spine::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 1px;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    background: linear-gradient(90deg, var(--accent), transparent 70%);
+  }
+
+  .card-interactive {
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+  }
+
+  /* ── option pills (native inputs own the state) ──────────────── */
+  .opt {
+    position: relative;
+    background: var(--surface-raised);
+    border: 1.5px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.5625rem 0.9375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      border-color 0.12s ease,
+      background-color 0.12s ease;
+  }
+
+  .opt input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .opt.sel {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    font-weight: 600;
+  }
+
+  .opt:focus-within {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ── severity pills ──────────────────────────────────────────── */
+  .pill {
+    font-family: var(--font-mono);
+    font-size: 0.65625rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    white-space: nowrap;
+  }
+
+  .pill-red {
+    background: color-mix(in srgb, var(--sev-red) 18%, transparent);
+    color: var(--sev-red);
+  }
+
+  .pill-amber {
+    background: color-mix(in srgb, var(--sev-amber) 18%, transparent);
+    color: var(--sev-amber);
+  }
+
+  .pill-ok {
+    background: color-mix(in srgb, var(--sev-ok) 18%, transparent);
+    color: var(--sev-ok);
+  }
+
+  .pill-cat {
+    background: var(--surface-raised);
+    color: var(--text-muted);
+  }
+
+  /* ── result panel rows ───────────────────────────────────────── */
+  .quote-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.875rem;
+    padding-block: 0.625rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .quote-line:last-of-type {
+    border-bottom: none;
+  }
+
+  .oblig-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.625rem;
+    font-size: 0.875rem;
+    padding-block: 0.5625rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .oblig-row:last-child {
+    border-bottom: none;
+  }
+
+  /* ── pricing tables ──────────────────────────────────────────── */
+  .ptable {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    font-size: 0.875rem;
+  }
+
+  .ptable th {
+    background: var(--color-ink-900);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.8125rem 1rem;
+  }
+
+  .ptable td {
+    padding: 0.875rem 1rem;
+    border-top: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .ptable tbody tr:nth-child(even) td {
+    background: var(--surface-sunken);
+  }
+
+  /* ── FAQ disclosure ──────────────────────────────────────────── */
+  .faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1rem 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.96875rem;
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item summary::after {
+    content: '+';
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 1.125rem;
+    flex-shrink: 0;
+  }
+
+  .faq-item[open] summary::after {
+    content: '−';
+  }
+
+  .faq-item[open] summary {
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── mobile nav disclosure ───────────────────────────────────── */
+  .mnav > summary {
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .mnav > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mnav[open] .mnav-open {
+    display: none;
+  }
+
+  .mnav:not([open]) .mnav-close {
+    display: none;
+  }
+}

@@ -1,0 +1,35 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import Card from '../ui/Card.astro';
+import { getDict, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+---
+
+<section id="how" class="section-y">
+  <div class="wrap">
+    <SectionHead tag={t.how.tag} heading={t.how.heading} lede={t.how.lede} />
+    <div class="reveal-stagger grid gap-5 md:grid-cols-3">
+      {
+        t.how.cards.map((c) => (
+          <Card k={c.k} h={c.h}>
+            <p class="text-base text-text-muted">{c.p}</p>
+          </Card>
+        ))
+      }
+    </div>
+    <div class="reveal-stagger mt-9 grid gap-5 md:grid-cols-3">
+      {
+        t.how.process.map((p) => (
+          <div class="rounded-b-[var(--radius-card)] border border-t-[3px] border-border border-t-accent bg-surface-raised px-5 py-5">
+            <span class="font-mono text-xs tracking-[0.12em] text-accent">{p.n}</span>
+            <h4 class="mb-1.5 mt-2 text-lg font-semibold">{p.h}</h4>
+            <p class="text-sm text-text-muted">{p.p}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

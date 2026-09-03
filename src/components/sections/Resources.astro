@@ -1,0 +1,41 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import { getDict, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+const r = t.resources;
+
+/* The legacy buttons pointed at a .docx and an .xlsx that do not exist in the
+   repository — both were hard 404s. Until the files are supplied they request
+   the asset by email, which keeps the promise honest and preserves the
+   zero-backend architecture the FAQ advertises. */
+const mailto = (subject: string, body: string) =>
+  `mailto:${t.footer.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+---
+
+<section id="resources" class="section-y">
+  <div class="wrap">
+    <SectionHead tag={r.tag} heading={r.heading} lede={r.lede} />
+    <div class="reveal-stagger grid gap-6 md:grid-cols-2">
+      {
+        r.items.map((item) => (
+          <div class="card card-spine card-interactive flex flex-col gap-2.5 p-7">
+            <span class="font-mono text-2xs uppercase tracking-[0.12em] text-accent">
+              {item.k}
+            </span>
+            <h3 class="text-2xl font-semibold">{item.h}</h3>
+            <p class="flex-1 text-base text-text-muted">{item.p}</p>
+            <a
+              href={mailto(item.subject, item.body)}
+              class="btn btn-primary btn-sm self-start"
+            >
+              {item.cta}
+            </a>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

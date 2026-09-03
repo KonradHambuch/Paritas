@@ -1,0 +1,171 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import OptionGroup from '../calc/OptionGroup.astro';
+import NumberRow from '../calc/NumberRow.astro';
+import StepLabel from '../calc/StepLabel.astro';
+import ResultCard from '../calc/ResultCard.astro';
+import { getDict, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+const c = t.tpCalc;
+const r = c.results;
+---
+
+<section id="tp-calc" class="section-y border-y border-border bg-surface-raised">
+  <div class="wrap">
+    <SectionHead tag={c.tag} heading={c.heading} lede={c.lede} />
+
+    <div class="grid items-start gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+      <form
+        class="rounded-2xl border border-border bg-surface p-7"
+        id="tpform"
+        onsubmit="return false"
+      >
+        <StepLabel first>{c.step1}</StepLabel>
+        <OptionGroup
+          name="parent"
+          options={[
+            { value: 'us', label: c.parent.us, checked: true },
+            { value: 'foreign', label: c.parent.foreign },
+            { value: 'cee', label: c.parent.cee },
+            { value: 'planned', label: c.parent.planned },
+          ]}
+        />
+        <NumberRow
+          rowId="flipYearsRow"
+          id="flipYears"
+          label={c.flipYears}
+          value={2}
+          min={0}
+          max={10}
+          step={1}
+          class="mt-2.5"
+        />
+
+        <StepLabel>{c.step2}</StepLabel>
+        <OptionGroup
+          name="countries"
+          type="checkbox"
+          options={[
+            { value: 'c_pl', label: c.countries.PL, checked: true },
+            { value: 'c_hu', label: c.countries.HU },
+            { value: 'c_cz', label: c.countries.CZ },
+            { value: 'c_ro', label: c.countries.RO },
+          ]}
+        />
+
+        <StepLabel>{c.step3}</StepLabel>
+        <NumberRow id="fDev" label={c.flows.dev} value={600000} min={0} max={250000000} step={10000} />
+        <NumberRow id="fMgmt" label={c.flows.mgmt} value={0} min={0} max={250000000} step={10000} />
+        <NumberRow id="fLoan" label={c.flows.loan} value={0} min={0} max={250000000} step={10000} />
+        <NumberRow id="fIp" label={c.flows.ip} value={0} min={0} max={250000000} step={10000} />
+        <p class="mt-1 text-xs text-text-muted">{c.flowsHint}</p>
+
+        <StepLabel>{c.step4}</StepLabel>
+        <OptionGroup
+          name="rev"
+          options={[
+            { value: '1', label: c.revenue.a, checked: true },
+            { value: '1.15', label: c.revenue.b },
+            { value: '1.35', label: c.revenue.c },
+            { value: '1.6', label: c.revenue.d },
+          ]}
+        />
+
+        <StepLabel>{c.step5}</StepLabel>
+        <OptionGroup
+          name="smallco"
+          options={[
+            { value: '1', label: c.smallCo.yes },
+            { value: '0', label: c.smallCo.no, checked: true },
+          ]}
+        />
+        <p class="mt-1 text-xs text-text-muted">{c.smallCoHint}</p>
+
+        <StepLabel>{c.step6}</StepLabel>
+        <OptionGroup
+          name="have"
+          type="checkbox"
+          options={[
+            { value: 'd_agree', label: c.have.agreement },
+            { value: 'd_bench', label: c.have.benchmark },
+            { value: 'd_lf', label: c.have.localFile },
+            { value: 'd_5471', label: c.have.forms5471 },
+            { value: 'd_room', label: c.have.dataRoom },
+          ]}
+        />
+
+        <StepLabel>{c.step7}</StepLabel>
+        <NumberRow id="fyEnd" type="date" label={c.fyEnd} value="2025-12-31" />
+        <OptionGroup
+          name="urgency"
+          options={[
+            { value: '1.25', label: c.urgency.rush },
+            { value: '1.1', label: c.urgency.quarter, checked: true },
+            { value: '1', label: c.urgency.none },
+          ]}
+        />
+
+        <button class="btn btn-primary mt-6 w-full" id="tpRun" type="button">
+          {c.run}
+        </button>
+      </form>
+
+      <div id="tpResults">
+        <!-- One sentence for assistive tech. The legacy page put aria-live on
+             the container wrapping all six cards, so a run announced roughly
+             sixty lines; the detail panels below are aria-live="off". -->
+        <p id="tpStatus" class="sr-only" role="status" aria-live="polite"></p>
+
+        <div aria-live="off">
+          <ResultCard title={r.obligationsTitle}>
+            <div id="obligOut">
+              <p class="text-sm italic text-text-muted">{r.obligationsEmpty}</p>
+            </div>
+          </ResultCard>
+
+          <ResultCard title={r.deadlinesTitle}>
+            <div id="dlOut">
+              <p class="text-sm italic text-text-muted">{r.deadlinesEmpty}</p>
+            </div>
+          </ResultCard>
+
+          <ResultCard title={r.exposureTitle}>
+            <div class="font-mono text-[2.125rem] font-semibold leading-tight text-sev-red" id="expOut">
+              —
+            </div>
+            <div class="mt-1.5 font-mono text-xs text-text-muted" id="expSub">{r.exposureSub}</div>
+          </ResultCard>
+
+          <ResultCard title={r.quoteTitle}>
+            <div id="tpQuoteOut">
+              <p class="text-sm italic text-text-muted">{r.quoteEmpty}</p>
+            </div>
+            <p class="mt-3.5 border-t border-border pt-3 text-2xs leading-relaxed text-text-muted" id="tpFn" hidden>
+              {r.footnote}
+            </p>
+            <a href="#contact" class="btn btn-primary mt-3.5 w-full" id="tpCta" hidden>
+              {r.cta}
+            </a>
+          </ResultCard>
+
+          <ResultCard title={r.methodTitle} id="methodCard" hidden>
+            <div id="methodOut"></div>
+            <p class="mt-3.5 border-t border-border pt-3 text-2xs leading-relaxed text-text-muted">
+              {r.methodFootnote}
+            </p>
+          </ResultCard>
+
+          <div
+            class="rounded-2xl border-[1.5px] border-accent bg-accent-soft px-6 py-5"
+            id="recoOut"
+            hidden
+          >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,30 @@
+---
+import Base from './Base.astro';
+import Nav from '../components/nav/Nav.astro';
+import Footer from '../components/nav/Footer.astro';
+import { getDict, localePath, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+---
+
+<Base lang={lang} title={t.meta.notFoundTitle}>
+  <Nav lang={lang} />
+  <main class="wrap flex min-h-[60vh] flex-col justify-center py-20">
+    <div class="max-w-[var(--container-prose)]">
+      <div class="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-accent">
+        {t.notFound.eyebrow}
+      </div>
+      <h1 class="mb-4 text-h2 font-bold tracking-display">{t.notFound.heading}</h1>
+      <p class="mb-8 text-lg text-text-muted">{t.notFound.body}</p>
+      <div class="flex flex-wrap gap-3.5">
+        <a href={localePath(lang)} class="btn btn-primary">{t.notFound.home}</a>
+        <a href={`${localePath(lang)}#tp-calc`} class="btn btn-ghost">
+          {t.notFound.calculator}
+        </a>
+      </div>
+    </div>
+  </main>
+  <Footer lang={lang} />
+</Base>

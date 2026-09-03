@@ -1,0 +1,31 @@
+---
+interface Props {
+  k?: string;
+  h?: string;
+  interactive?: boolean;
+  spine?: boolean;
+  ink?: boolean;
+  class?: string;
+}
+const { k, h, interactive = false, spine = true, ink = false, class: cls = '' } = Astro.props;
+---
+
+<div
+  class:list={[
+    'card',
+    spine && 'card-spine',
+    interactive && 'card-interactive',
+    ink && 'surface-ink',
+    cls,
+  ]}
+>
+  {
+    k && (
+      <span class="mb-3 block font-mono text-xs uppercase tracking-[0.1em] text-accent">
+        {k}
+      </span>
+    )
+  }
+  {h && <h3 class="mb-2.5 text-xl font-semibold">{h}</h3>}
+  <slot />
+</div>

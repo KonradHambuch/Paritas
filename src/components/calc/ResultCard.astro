@@ -1,0 +1,20 @@
+---
+interface Props {
+  title: string;
+  id?: string;
+  hidden?: boolean;
+  class?: string;
+}
+const { title, id, hidden = false, class: cls = '' } = Astro.props;
+---
+
+<div
+  id={id}
+  hidden={hidden}
+  class={`surface-ink mb-4 rounded-2xl border border-border bg-surface p-7 text-text ${cls}`}
+>
+  <h3 class="mb-4 font-mono text-xs font-medium uppercase tracking-[0.12em] text-text-muted">
+    {title}
+  </h3>
+  <slot />
+</div>

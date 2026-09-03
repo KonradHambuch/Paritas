@@ -1,0 +1,45 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import { getDict, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+const p = t.proof;
+---
+
+<section id="proof" class="section-y border-t border-border">
+  <div class="wrap">
+    <SectionHead tag={p.tag} heading={p.heading} lede={p.lede} />
+
+    <div class="reveal mb-9 grid grid-cols-2 divide-x divide-y divide-border overflow-hidden rounded-[var(--radius-card)] border border-border md:grid-cols-4 md:divide-y-0">
+      {
+        p.stats.map((s) => (
+          <div class="bg-surface-raised px-5 py-6 text-center">
+            <div class="font-mono text-[1.875rem] font-semibold leading-tight text-accent">
+              {s.v}
+            </div>
+            <div class="mt-1.5 text-xs text-text-muted">{s.l}</div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="reveal-stagger grid gap-5 md:grid-cols-3">
+      {
+        p.quotes.map((q) => (
+          <div class="card card-spine flex flex-col">
+            <div class="mb-2.5 font-display text-[2.5rem] leading-[0.8] text-accent">
+              {q.mark}
+            </div>
+            <blockquote class="flex-1 text-base leading-relaxed">{q.quote}</blockquote>
+            <div class="mt-4 border-t border-border pt-3.5">
+              <div class="text-sm font-semibold">{q.by}</div>
+              <div class="text-xs text-text-muted">{q.role}</div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

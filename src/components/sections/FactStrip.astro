@@ -1,0 +1,31 @@
+---
+import { CONFIG } from '../../lib/calc/config';
+import { fill, getDict, type Lang } from '../../i18n';
+import { makeFormat } from '../../lib/format';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+const fmt = makeFormat(lang);
+
+/* The Polish services threshold is rendered from CONFIG, not typed into the
+   prose. The legacy page said "~EUR470k" here while the gauge said "~EUR464k"
+   and the engine used 464000 — three numbers for one rule. */
+const threshold = fmt.eurK(CONFIG.thresholds.PL_serv);
+
+const facts = [
+  t.strip.fact1,
+  fill(t.strip.fact2, { threshold }),
+  t.strip.fact3,
+];
+---
+
+<div class="surface-ink bg-surface py-5 text-text">
+  <div class="wrap grid gap-6 md:grid-cols-3 md:gap-10">
+    {
+      facts.map((f) => (
+        <p class="text-sm [&_b]:text-text-strong" set:html={f} />
+      ))
+    }
+  </div>
+</div>

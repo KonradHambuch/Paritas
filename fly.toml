@@ -1,0 +1,36 @@
+# Warsaw: the brand is "Warsaw · Budapest", and waw→Budapest is ~15ms.
+# Frankfurt would be worse for both of the firm's own offices.
+app            = "paritas"
+primary_region = "waw"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port        = 8080
+  force_https          = true
+  auto_start_machines  = true
+  # "suspend" resumes in well under a second, unlike a full container start.
+  auto_stop_machines   = "suspend"
+  # Deliberately 1, not 0. A cold start lands squarely in TTFB, and the
+  # requests most likely to hit a stopped machine are Googlebot's and a first
+  # visitor's. One shared-cpu-1x/256mb machine is a couple of dollars a month.
+  min_machines_running = 1
+  processes            = ["app"]
+
+  [http_service.concurrency]
+    type       = "requests"
+    soft_limit = 200
+    hard_limit = 400
+
+  [[http_service.checks]]
+    grace_period = "5s"
+    interval     = "30s"
+    method       = "GET"
+    path         = "/"
+    protocol     = "http"
+    timeout      = "3s"
+
+[[vm]]
+  size   = "shared-cpu-1x"
+  memory = "256mb"

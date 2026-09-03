@@ -1,0 +1,40 @@
+---
+interface Props {
+  id: string;
+  label: string;
+  value: string | number;
+  min?: number;
+  max?: number;
+  step?: number;
+  type?: 'number' | 'date';
+  rowId?: string;
+  class?: string;
+}
+const {
+  id,
+  label,
+  value,
+  min,
+  max,
+  step,
+  type = 'number',
+  rowId,
+  class: cls = '',
+} = Astro.props;
+---
+
+<div
+  id={rowId}
+  class={`mb-2.5 grid grid-cols-[1fr_9rem] items-center gap-3 ${cls}`}
+>
+  <label for={id} class="text-sm">{label}</label>
+  <input
+    class="w-full rounded-lg border-[1.5px] border-border bg-surface-raised px-2.5 py-2 font-mono text-sm text-text focus:border-accent focus:outline-none"
+    type={type}
+    id={id}
+    min={min}
+    max={max}
+    step={step}
+    value={String(value)}
+  />
+</div>

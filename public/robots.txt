@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://paritas.eu/sitemap-index.xml

@@ -1,0 +1,12 @@
+---
+interface Props { first?: boolean }
+const { first = false } = Astro.props;
+---
+<div
+  class:list={[
+    'font-mono text-2xs uppercase tracking-[0.12em] text-accent mb-2',
+    first ? 'mt-0' : 'mt-6',
+  ]}
+>
+  <slot />
+</div>

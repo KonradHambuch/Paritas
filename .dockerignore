@@ -1,0 +1,10 @@
+node_modules
+dist
+.astro
+.git
+.github
+tests
+docs
+legacy
+*.md
+.env*

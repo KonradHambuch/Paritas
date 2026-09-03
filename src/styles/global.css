@@ -1,0 +1,353 @@
+@import 'tailwindcss';
+
+@import '@fontsource-variable/space-grotesk/index.css';
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-400.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-500.css';
+@import '@fontsource/ibm-plex-sans/latin-ext-600.css';
+@import '@fontsource/ibm-plex-mono/latin-400.css';
+@import '@fontsource/ibm-plex-mono/latin-500.css';
+@import '@fontsource/ibm-plex-mono/latin-600.css';
+@import '@fontsource/ibm-plex-mono/latin-ext-400.css';
+@import '@fontsource/ibm-plex-mono/latin-ext-500.css';
+@import '@fontsource/ibm-plex-mono/latin-ext-600.css';
+@import './components.css';
+
+/* Dark mode is driven by a class on <html>, set before first paint by the
+   no-flash script in Base.astro. Not a media query: the toggle must win. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* =========================================================================
+   1. RAW PALETTE — fixed values. Never referenced directly from markup;
+      markup uses the semantic roles in layer 2 instead.
+   ========================================================================= */
+@theme {
+  --font-display: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --color-ink-950: #060f1d;
+  --color-ink-900: #0a1b33;
+  --color-ink-800: #102643;
+  --color-ink-700: #122a4d;
+  --color-ink-600: #1a2e4e;
+  --color-ink-500: #234163;
+
+  --color-cobalt-600: #1e3fbf;
+  --color-cobalt-500: #2b5cff;
+  --color-cobalt-400: #5b85ff;
+  --color-cobalt-100: #ebf0ff;
+
+  --color-ice: #f5f8fd;
+  --color-ice-deep: #eaf0fb;
+  --color-paper: #ffffff;
+  --color-line: #c9d6ea;
+  --color-steel: #5a6b85;
+
+  --color-alert-500: #e5484d;
+  --color-alert-300: #ff8a8f;
+  --color-warn-500: #d97e00;
+  --color-warn-300: #f5b564;
+  --color-ok-500: #1f9d61;
+  --color-ok-300: #5fd79e;
+
+  /* Type scale — replaces the seven near-identical ad-hoc sizes
+     (11.5 / 12.5 / 13.5 / 14.5 / 15.5 / 16.5 / 17px) with eight steps. */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1.45;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.6;
+  --text-base: 0.9375rem;
+  --text-base--line-height: 1.65;
+  --text-lg: 1.0625rem;
+  --text-lg--line-height: 1.6;
+  --text-xl: 1.1875rem;
+  --text-xl--line-height: 1.35;
+  --text-2xl: 1.375rem;
+  --text-2xl--line-height: 1.25;
+  --text-h2: clamp(1.75rem, 3.4vw, 2.375rem);
+  --text-h2--line-height: 1.12;
+  --text-h1: clamp(2.375rem, 5vw, 3.5rem);
+  --text-h1--line-height: 1.06;
+
+  --tracking-display: -0.025em;
+
+  --container-wrap: 70rem; /* 1120px — matches the legacy .wrap */
+  --container-prose: 44rem;
+
+  --radius-card: 0.875rem;
+
+  --shadow-card: 0 1px 2px rgb(10 27 51 / 0.05), 0 10px 28px -14px rgb(10 27 51 / 0.22);
+  --shadow-lift: 0 2px 4px rgb(10 27 51 / 0.06), 0 18px 40px -18px rgb(10 27 51 / 0.3);
+  --shadow-float: 0 24px 60px -20px rgb(10 27 51 / 0.45);
+}
+
+/* =========================================================================
+   2. SEMANTIC ROLES — remapped by .dark AND by .surface-ink.
+   ========================================================================= */
+:root {
+  --surface: #f5f8fd;
+  --surface-raised: #ffffff;
+  --surface-sunken: #eaf0fb;
+  --border: #c9d6ea;
+  --text: #0a1b33;
+  --text-strong: #0a1b33;
+  --text-muted: #5a6b85;
+  --accent: #2b5cff;
+  --accent-hover: #1e3fbf;
+  --accent-soft: #ebf0ff;
+  --on-accent: #ffffff;
+  --sev-red: #e5484d;
+  --sev-amber: #d97e00;
+  --sev-ok: #1f9d61;
+  --nav-bg: rgb(245 248 253 / 0.92);
+  --nav-h: 64px;
+  color-scheme: light;
+}
+
+.dark {
+  --surface: #060f1d;
+  --surface-raised: #0f1f35;
+  --surface-sunken: #0a1729;
+  --border: #1e3355;
+  --text: #e6edf8;
+  --text-strong: #ffffff;
+  --text-muted: #93a6c2;
+  /* #2B5CFF on #060F1D is only ~4.3:1 — lift the accent for dark surfaces. */
+  --accent: #5b85ff;
+  --accent-hover: #7c9bff;
+  --accent-soft: #14294d;
+  --on-accent: #06101f;
+  --sev-red: #ff8a8f;
+  --sev-amber: #f5b564;
+  --sev-ok: #5fd79e;
+  --nav-bg: rgb(6 15 29 / 0.88);
+  color-scheme: dark;
+}
+
+/* Permanently-dark surface context: the brand's inverted panels
+   (.res-card, .gauge-card, footer, fact strip, #why, #contact).
+   These are dark even while the page is light — they are not "dark mode". */
+.surface-ink {
+  --surface: #0a1b33;
+  --surface-raised: #122a4d;
+  --surface-sunken: #060f1d;
+  --border: #1a2e4e;
+  --text: #dce6f7;
+  --text-strong: #ffffff;
+  --text-muted: #8fa5c8;
+  --accent: #5b85ff;
+  --accent-hover: #7c9bff;
+  --accent-soft: #122a4d;
+  --on-accent: #06101f;
+  --sev-red: #ff8a8f;
+  --sev-amber: #f5b564;
+  --sev-ok: #5fd79e;
+  color-scheme: dark;
+}
+
+/* THE collision fix. In dark mode the page is already near-black, so an ink
+   panel must lift ONE STEP ABOVE it or it stops reading as a panel at all.
+   Without this rule the results card — the most important UI on the site —
+   dissolves into the page background. */
+.dark .surface-ink {
+  --surface: #101f36;
+  --surface-raised: #16283f;
+  --surface-sunken: #0b1728;
+  --border: #24395c;
+}
+
+/* Chrome recedes BELOW the page while panels float ABOVE it. */
+.dark .surface-ink-footer {
+  --surface: #0a1729;
+  --border: #1e3355;
+}
+
+/* =========================================================================
+   3. BRIDGE roles into Tailwind's colour namespace.
+      `inline` is REQUIRED. Without it Tailwind bakes the :root value into the
+      utility and both .dark and .surface-ink silently no-op. With it,
+      `bg-surface` emits `background-color: var(--surface)`, resolved at the
+      element — which is what makes the scoping above work.
+   ========================================================================= */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border: var(--border);
+  --color-text: var(--text);
+  --color-text-strong: var(--text-strong);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-sev-red: var(--sev-red);
+  --color-sev-amber: var(--sev-amber);
+  --color-sev-ok: var(--sev-ok);
+}
+
+/* =========================================================================
+   4. BASE
+   ========================================================================= */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    background-color: var(--surface);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.65;
+  }
+
+  /* Anchor landings must clear the sticky nav, whose height differs on mobile. */
+  :target,
+  [id] {
+    scroll-margin-top: calc(var(--nav-h) + 1rem);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    color: var(--text-strong);
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  /* Native controls (the calculators are almost entirely native inputs,
+     including a date picker) follow the active theme. */
+  input,
+  button,
+  select,
+  textarea {
+    font: inherit;
+    color-scheme: inherit;
+  }
+}
+
+/* =========================================================================
+   5. SCROLL REVEAL — CSS only, progressive enhancement.
+      The base state is VISIBLE. The animation is layered on top only where
+      supported, so an unsupporting engine (Firefox today) renders the
+      finished page rather than a blank one. No JS, no IntersectionObserver.
+   ========================================================================= */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 24%;
+    }
+
+    .reveal-stagger > * {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 6% cover 26%;
+    }
+
+    .reveal-stagger > *:nth-child(2) {
+      animation-range: entry 2% cover 28%;
+    }
+
+    .reveal-stagger > *:nth-child(3) {
+      animation-range: entry 0% cover 30%;
+    }
+
+    .scroll-progress {
+      animation: progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+@keyframes progress {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+/* =========================================================================
+   6. PRINT — a calculator result should print as a clean one-pager.
+   ========================================================================= */
+@media print {
+  nav,
+  footer .foot-grid,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .surface-ink {
+    --surface: #fff;
+    --surface-raised: #fff;
+    --text: #000;
+    --text-strong: #000;
+    --text-muted: #333;
+    --border: #ccc;
+    --accent: #000;
+  }
+
+  .reveal,
+  .reveal-stagger > * {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+  }
+}

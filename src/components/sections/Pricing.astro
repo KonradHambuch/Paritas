@@ -1,0 +1,49 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import { getDict, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+const p = t.pricing;
+
+const tables = [
+  { caption: p.tpCaption, rows: p.tpRows },
+  { caption: p.ddCaption, rows: p.ddRows },
+];
+---
+
+<section id="pricing" class="section-y">
+  <div class="wrap">
+    <SectionHead tag={p.tag} heading={p.heading} lede={p.lede} />
+    <div class="grid items-start gap-7 lg:grid-cols-2">
+      {
+        tables.map((table) => (
+          <div class="reveal min-w-0">
+            <p class="mb-3.5 font-display text-xl font-semibold">{table.caption}</p>
+            <div class="overflow-x-auto rounded-[var(--radius-card)]">
+              <table class="ptable min-w-[34rem]">
+                <thead>
+                  <tr>
+                    <th>{p.colPackage}</th>
+                    <th>{p.colPrice}</th>
+                    <th>{p.colMidTier}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {table.rows.map((row) => (
+                    <tr>
+                      <td set:html={row.name} />
+                      <td class="whitespace-nowrap font-mono font-semibold">{row.price}</td>
+                      <td class="font-mono text-xs text-text-muted">{row.anchor}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

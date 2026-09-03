@@ -1,0 +1,21 @@
+---
+interface Props {
+  tag?: string;
+  heading: string;
+  lede?: string;
+  class?: string;
+}
+const { tag, heading, lede, class: cls = '' } = Astro.props;
+---
+
+<div class={`reveal mb-10 max-w-[48em] md:mb-14 ${cls}`}>
+  {
+    tag && (
+      <span class="mb-4 inline-block rounded-full border border-accent px-3 py-1 font-mono text-2xs uppercase tracking-[0.13em] text-accent">
+        {tag}
+      </span>
+    )
+  }
+  <h2 class="mb-3.5 text-h2 font-bold tracking-display">{heading}</h2>
+  {lede && <p class="text-lg text-text-muted" set:html={lede} />}
+</div>
