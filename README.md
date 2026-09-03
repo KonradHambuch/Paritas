@@ -3,14 +3,14 @@
 Bilingual (EN/HU) static marketing site for Paritas — transfer pricing
 documentation and financial due diligence for cross-border startups in CEE.
 
-Astro 5 · Tailwind 4 · TypeScript · deployed to fly.io behind Caddy.
+Astro 5 · Tailwind 4 · TypeScript · static output, deployed on Cloudflare Pages.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
 | `npm run dev` | Dev server on :4321 |
-| `npm run build` | Type-check, build to `dist/`, then pre-compress (br + gz) |
+| `npm run build` | Type-check and build to `dist/` |
 | `npm run preview` | Serve the built output |
 | `npm test` | Engine parity, dates, i18n completeness, formatting |
 

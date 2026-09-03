@@ -1,86 +1,74 @@
-# Deploying to fly.io
+# Deploying
 
-The site builds to static files and is served by Caddy in a ~55 MB container.
+The site builds to plain static files in `dist/`. Any static host will serve it;
+these instructions are for Cloudflare Pages, which needs no server, no
+container and no secrets in the repo.
 
-## One-time setup
+## Cloudflare Pages, connected to GitHub
 
-`flyctl` is not installed on this machine, and neither is Docker. Install the
-CLI first:
+Once, in the Cloudflare dashboard:
 
-```powershell
-# Windows (PowerShell)
-iwr https://fly.io/install.ps1 -useb | iex
-```
+1. **Workers & Pages → Create → Pages → Connect to Git**
+2. Pick the `KonradHambuch/Paritas` repository
+3. Build settings:
 
-Then:
+   | Field | Value |
+   |---|---|
+   | Framework preset | Astro |
+   | Build command | `npm run build` |
+   | Build output directory | `dist` |
+   | Node version | `22.19.0` (env var `NODE_VERSION`) |
 
-```bash
-fly auth login
-fly launch --no-deploy --name paritas-eu --region waw   # keeps the fly.toml in this repo
-fly deploy --remote-only                             # --remote-only: no local Docker needed
-```
+4. Save and deploy.
 
-`--remote-only` builds on fly's builder. It is the default when no local Docker
-daemon is found, but passing it explicitly avoids a confusing error.
+From then on every push to `main` builds and goes live automatically, and every
+pull request gets its own preview URL. Nothing else to configure.
 
 ## Custom domain
 
-```bash
-fly ips list          # note the shared v4 and the dedicated v6
-```
+In the Pages project: **Custom domains → Set up a domain → `paritas.eu`**.
 
-At the registrar:
+If the domain's nameservers are already on Cloudflare, the DNS record is created
+for you and the certificate is issued automatically. If not, Cloudflare shows
+the CNAME to add at your registrar.
 
-```
-A     @    <shared IPv4>
-AAAA  @    <dedicated IPv6>
-CNAME www  paritas.fly.dev
-```
+Add `www.paritas.eu` as well and let it redirect to the apex — the apex is
+canonical, because `astro.config.mjs` sets `site: 'https://paritas.eu'` and
+every `<link rel="canonical">` points there.
 
-Then:
+## What the two config files do
 
-```bash
-fly certs add paritas.eu
-fly certs add www.paritas.eu
-fly certs show paritas.eu     # wait for the ACME challenge to clear
-```
+- **`public/_headers`** — cache policy and security headers. Hashed assets under
+  `/_astro/` are immutable for a year; HTML revalidates, so a redeploy is
+  visible immediately while repeat visits still get a 304.
+- **`public/_redirects`** — `301 /paritas.html → /`, so links to the old
+  single-file site keep working.
 
-The apex is canonical — `astro.config.mjs` sets `site: 'https://paritas.eu'`
-and every `<link rel="canonical">` points there.
+Both are plain text files that Astro copies from `public/` into `dist/`, and
+Cloudflare reads them from the deployment root. Compression is handled at the
+edge, so there is nothing to pre-compress.
 
 ## Verifying a deploy
 
 ```bash
-curl -sI https://paritas.eu/ | grep -i 'cache-control\|content-encoding'
-curl -sI -H 'Accept-Encoding: br' https://paritas.eu/_astro/<hash>.js | grep -i content-encoding
-curl -so /dev/null -w '%{time_starttransfer}\n' https://paritas.eu/
-curl -sI https://paritas.eu/nope    | head -1     # expect 404
-curl -s  https://paritas.eu/hu/nope | grep -o 'nem található'
-curl -sI https://paritas.eu/paritas.html | head -1  # expect 301 to /
+curl -sI https://paritas.eu/            | grep -i 'cache-control\|content-encoding'
+curl -sI https://paritas.eu/_astro/<hash>.css | grep -i 'cache-control'
+curl -sI https://paritas.eu/paritas.html | head -1     # expect 301
+curl -sI https://paritas.eu/nope         | head -1     # expect 404
+curl -s  https://paritas.eu/hu/          | grep -o 'Határon átnyúló'
 ```
 
-Expected: `/_astro/*` is `immutable`, HTML is `max-age=0, must-revalidate`,
-assets are served pre-compressed with brotli, TTFB from Europe well under 100 ms.
+## If you would rather use fly.io
 
-## Why these choices
-
-**Caddy, not `@astrojs/node`.** The output is `static` — there is nothing to
-run. A Node runtime would add ~60 MB and a few hundred ms of cold start in
-exchange for no capability.
-
-**Pre-compressed at build time.** Caddy's `encode` does gzip and zstd but not
-brotli without a custom build. `scripts/precompress.mjs` writes `.br` and `.gz`
-next to each asset and `file_server { precompressed }` serves them, so there is
-zero compression CPU per request — which matters on a 256 MB shared machine.
-
-**`min_machines_running = 1`, not scale-to-zero.** A cold start lands directly
-in TTFB, and the requests most likely to hit a stopped machine are Googlebot's
-and a first-time visitor's. One `shared-cpu-1x`/256 MB machine is a couple of
-dollars a month. Set it to 0 with `auto_stop_machines = "suspend"` if that
-changes.
-
-For zero-blip rolling deploys, run two machines in Warsaw:
+The `Dockerfile`, `Caddyfile` and `fly.toml` for a fly.io deployment were
+written and verified, then removed in favour of this simpler path. They are in
+git history if the decision changes:
 
 ```bash
-fly scale count 2 --region waw
+git show 9d996db:Dockerfile
+git show 9d996db:Caddyfile
+git show 9d996db:fly.toml
 ```
+
+Note that `paritas` is already taken as a fly app name by an unrelated site, so
+those files use `paritas-eu`.
