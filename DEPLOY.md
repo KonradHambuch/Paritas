@@ -16,7 +16,7 @@ Then:
 
 ```bash
 fly auth login
-fly launch --no-deploy --name paritas --region waw   # keeps the fly.toml in this repo
+fly launch --no-deploy --name paritas-eu --region waw   # keeps the fly.toml in this repo
 fly deploy --remote-only                             # --remote-only: no local Docker needed
 ```
 

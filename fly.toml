@@ -1,6 +1,10 @@
 # Warsaw: the brand is "Warsaw · Budapest", and waw→Budapest is ~15ms.
 # Frankfurt would be worse for both of the firm's own offices.
-app            = "paritas"
+# NOTE: "paritas" is already taken on fly.io by an unrelated app
+# (paritas.fly.dev serves someone else's Next.js site), so this uses
+# "paritas-eu". The name only affects the *.fly.dev hostname and the fly
+# dashboard — the custom domain is attached separately with `fly certs add`.
+app            = "paritas-eu"
 primary_region = "waw"
 
 [build]
