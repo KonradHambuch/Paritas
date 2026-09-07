@@ -34,17 +34,23 @@ const links = [
 >
   <div class="wrap flex h-[76px] items-center justify-between gap-6">
     <a href={localePath(lang)} class="brand no-underline hover:no-underline">
-      {t.brand.name}<span>{t.brand.tagline}</span>
+      {t.brand.name}<span class="hidden sm:block">{t.brand.tagline}</span>
     </a>
 
-    <nav class="hidden items-center gap-[30px] font-sans text-[0.90625rem] lg:flex">
-      {
-        links.map((l) => (
-          <a href={l.href} class="text-body no-underline hover:underline">
-            {l.label}
-          </a>
-        ))
-      }
+    <div class="flex items-center gap-5 lg:gap-[30px]">
+      <nav class="hidden items-center gap-[30px] font-sans text-[0.90625rem] lg:flex">
+        {
+          links.map((l) => (
+            <a href={l.href} class="text-body no-underline hover:underline">
+              {l.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <!-- ONE language link for every breakpoint. Rendering a second, hidden
+           copy for mobile meant the phone version had no hash preservation,
+           so tapping it from #tools landed the reader back at the top. -->
       <a
         id="langSwitch"
         href={otherHref}
@@ -53,28 +59,16 @@ const links = [
         lang={LANG_TAG[other]}
         rel="alternate"
         aria-label={t.nav.otherLanguageLabel}
-        class="border-l border-line pl-[26px] text-muted no-underline hover:underline"
+        class="font-sans text-[0.90625rem] text-muted no-underline hover:underline lg:border-l lg:border-line lg:pl-[26px]"
       >
         {t.nav.otherLanguage}
       </a>
-    </nav>
 
-    <!-- Below the desktop breakpoint the reference design simply hid the nav
-         with no menu at all, leaving every section unreachable on a phone.
-         A native <details> disclosure needs no script to open or close and is
-         correct for keyboard and screen readers by default. -->
-    <div class="flex items-center gap-4 lg:hidden">
-      <a
-        href={otherHref}
-        hreflang={LANG_TAG[other]}
-        lang={LANG_TAG[other]}
-        rel="alternate"
-        aria-label={t.nav.otherLanguageLabel}
-        class="font-sans text-[0.84375rem] text-muted no-underline"
-      >
-        {t.nav.otherLanguage}
-      </a>
-      <details class="mnav" id="mobileNav">
+      <!-- Below the desktop breakpoint the reference design simply hid the nav
+           with no menu at all, leaving every section unreachable on a phone.
+           A native <details> disclosure needs no script to open or close and is
+           correct for keyboard and screen readers by default. -->
+      <details class="mnav lg:hidden" id="mobileNav">
         <summary
           class="grid size-9 place-items-center border border-line text-ink"
           aria-label={t.nav.menu}
