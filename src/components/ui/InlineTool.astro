@@ -1,0 +1,16 @@
+---
+interface Props {
+  lbl: string;
+  h: string;
+  p: string;
+  cta: string;
+  href: string;
+}
+const { lbl, h, p, cta, href } = Astro.props;
+---
+<div class="inline-tool">
+  <div class="lbl">{lbl}</div>
+  <h3>{h}</h3>
+  <p>{p}</p>
+  <a href={href}>{cta}</a>
+</div>

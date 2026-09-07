@@ -1,11 +1,11 @@
 ---
 import '../styles/global.css';
 import { getDict, LANG_TAG, localePath, otherLang, type Lang } from '../i18n';
-import { assertRulebookFresh } from '../lib/calc/config';
+import { assertRulebookFresh } from '../lib/tools/config';
 
-/* Runs at build time on every page. The site tells visitors its rulebook was
-   verified in a specific month; if that claim goes stale the build fails
-   rather than shipping a misrepresentation. */
+/* Runs at build time on every page. The site publishes a threshold and a
+   penalty figure; if the rulebook claim goes stale the build fails rather
+   than shipping numbers nobody has re-checked. */
 assertRulebookFresh();
 
 interface Props {
@@ -29,35 +29,24 @@ const alternates = [
 
 const ogImage = new URL(`/og-${lang}.png`, site).href;
 
-/* FAQPage structured data — the eight native <details> are already exactly the
-   shape Google wants, so this is free rich-result eligibility. */
-const faqJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  inLanguage: LANG_TAG[lang],
-  mainEntity: t.faq.items.map((item) => ({
-    '@type': 'Question',
-    name: item.q,
-    acceptedAnswer: { '@type': 'Answer', text: item.a },
-  })),
-};
-
 const orgJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   name: 'Paritas',
   url: site.href,
-  email: t.footer.email,
+  email: t.contact.email,
   description: t.meta.description,
-  areaServed: ['PL', 'HU', 'CZ', 'RO'],
-  knowsLanguage: ['en', 'hu'],
+  address: { '@type': 'PostalAddress', addressLocality: 'Budapest', addressCountry: 'HU' },
+  areaServed: 'HU',
+  knowsLanguage: ['hu', 'en'],
+  serviceType: t.services.items.map((s) => s.h),
 };
 ---
 
 <html lang={LANG_TAG[lang]}>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title ?? t.meta.title}</title>
     <meta name="description" content={description ?? t.meta.description} />
     <link rel="canonical" href={canonical} />
@@ -67,20 +56,17 @@ const orgJsonLd = {
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Paritas" />
-    <meta property="og:title" content={t.meta.ogTitle} />
-    <meta property="og:description" content={t.meta.ogDescription} />
+    <meta property="og:title" content={title ?? t.meta.title} />
+    <meta property="og:description" content={description ?? t.meta.description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:locale" content={t.meta.ogLocale} />
     <meta property="og:locale:alternate" content={getDict(other).meta.ogLocale} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={t.meta.ogTitle} />
-    <meta name="twitter:description" content={t.meta.twitterDescription} />
+    <meta name="twitter:title" content={title ?? t.meta.title} />
+    <meta name="twitter:description" content={description ?? t.meta.description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <script is:inline set:html={`(function(){try{var s=localStorage.getItem('theme');var d=s?s==='dark':matchMedia('(prefers-color-scheme:dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();`} />
-
-    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
     <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
   </head>
 

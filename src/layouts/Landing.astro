@@ -3,44 +3,28 @@ import Base from './Base.astro';
 import Nav from '../components/nav/Nav.astro';
 import Footer from '../components/nav/Footer.astro';
 import Hero from '../components/sections/Hero.astro';
-import FactStrip from '../components/sections/FactStrip.astro';
-import Why from '../components/sections/Why.astro';
-import How from '../components/sections/How.astro';
-import Software from '../components/sections/Software.astro';
-import TpCalculator from '../components/sections/TpCalculator.astro';
-import DdCalculator from '../components/sections/DdCalculator.astro';
-import Pricing from '../components/sections/Pricing.astro';
-import Bundles from '../components/sections/Bundles.astro';
-import Proof from '../components/sections/Proof.astro';
+import Services from '../components/sections/Services.astro';
 import Team from '../components/sections/Team.astro';
-import Faq from '../components/sections/Faq.astro';
-import Resources from '../components/sections/Resources.astro';
+import Sale from '../components/sections/Sale.astro';
+import Acquisition from '../components/sections/Acquisition.astro';
+import Method from '../components/sections/Method.astro';
+import Tools from '../components/sections/Tools.astro';
 import Contact from '../components/sections/Contact.astro';
 import type { Lang } from '../i18n';
 
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 ---
-
 <Base lang={lang}>
   <Nav lang={lang} />
-  <main>
+  <main id="main">
     <Hero lang={lang} />
-    <FactStrip lang={lang} />
-    <Why lang={lang} />
-    <How lang={lang} />
-    <!-- Moved ahead of the calculators: it explains why the tool the visitor
-         is about to use exists. In the legacy page it sat after the contact
-         CTA, below the primary conversion point, where nobody read it. -->
-    <Software lang={lang} />
-    <TpCalculator lang={lang} />
-    <DdCalculator lang={lang} />
-    <Pricing lang={lang} />
-    <Bundles lang={lang} />
-    <Proof lang={lang} />
+    <Services lang={lang} />
     <Team lang={lang} />
-    <Faq lang={lang} />
-    <Resources lang={lang} />
+    <Sale lang={lang} />
+    <Acquisition lang={lang} />
+    <Method lang={lang} />
+    <Tools lang={lang} />
     <Contact lang={lang} />
   </main>
   <Footer lang={lang} />

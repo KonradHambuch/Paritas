@@ -1,22 +1,22 @@
 ---
 import SectionHead from '../ui/SectionHead.astro';
-import Card from '../ui/Card.astro';
 import { getDict, type Lang } from '../../i18n';
-
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = getDict(lang);
 ---
-
-<section id="team" class="section-y border-t border-border bg-surface-raised">
+<section id="team" class="section">
   <div class="wrap">
-    <SectionHead tag={t.team.tag} heading={t.team.heading} lede={t.team.lede} />
-    <div class="reveal-stagger grid gap-5 md:grid-cols-3">
+    <SectionHead eyebrow={t.team.eyebrow} heading={t.team.heading} lede={t.team.lede} />
+    <div class="mt-10 grid gap-11 md:grid-cols-3">
       {
-        t.team.cards.map((c) => (
-          <Card k={c.k} h={c.h}>
-            <p class="text-base text-text-muted">{c.p}</p>
-          </Card>
+        t.team.members.map((m) => (
+          <div>
+            <div class="rule-sm" />
+            <h3 class="mb-1 text-[1.125rem]">{m.h}</h3>
+            <div class="role">{m.role}</div>
+            <p class="text-[0.96875rem]">{m.p}</p>
+          </div>
         ))
       }
     </div>

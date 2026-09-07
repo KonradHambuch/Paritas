@@ -9,60 +9,42 @@ const t = getDict(lang);
 const other = otherLang(lang);
 const otherHref = localePath(other);
 
+/* Anchors are the same in both languages on purpose. The reference pages used
+   localised ids (#services vs #szolgaltatasok), which would mean the language
+   switcher could not carry the reader's place across the switch. */
 const links = [
-  { href: '#tp-calc', label: t.nav.links.tpCalc },
-  { href: '#dd-calc', label: t.nav.links.ddCalc },
-  { href: '#software', label: t.nav.links.software },
-  { href: '#pricing', label: t.nav.links.pricing },
+  { href: '#services', label: t.nav.links.services },
+  { href: '#sale', label: t.nav.links.sale },
+  { href: '#acquisition', label: t.nav.links.acquisition },
   { href: '#team', label: t.nav.links.team },
-  { href: '#resources', label: t.nav.links.resources },
+  { href: '#tools', label: t.nav.links.tools },
+  { href: '#contact', label: t.nav.links.contact },
 ];
 ---
 
 <a
-  href="#tp-calc"
-  class="absolute left-[-9999px] top-0 z-[100] rounded-br-md bg-accent px-5 py-3 text-on-accent focus:left-0"
+  href="#main"
+  class="absolute left-[-9999px] top-0 z-[100] bg-ink px-5 py-3 font-sans text-sm text-white focus:left-0"
 >
-  {t.nav.skipToCalculator}
+  {t.nav.skip}
 </a>
 
-<nav
-  class="sticky top-0 z-50 border-b border-border backdrop-blur-md"
-  style="background: var(--nav-bg)"
+<header
+  class="top sticky top-0 z-50 border-b border-line bg-paper/[0.97] backdrop-blur-[8px]"
 >
-  <!-- Scroll-linked reading progress. Pure CSS via animation-timeline: scroll();
-       where unsupported it simply stays at zero width and is invisible. -->
-  <div
-    class="scroll-progress pointer-events-none absolute inset-x-0 bottom-[-1px] h-[2px] origin-left bg-accent"
-    style="scale: 0 1"
-    aria-hidden="true"
-  >
-  </div>
-
-  <div class="wrap flex h-16 items-center justify-between gap-4">
-    <a
-      href={localePath(lang)}
-      class="font-display text-[1.375rem] font-bold tracking-[-0.02em] text-text-strong no-underline hover:no-underline"
-    >
-      Pari<span class="text-accent">tas</span>
+  <div class="wrap flex h-[76px] items-center justify-between gap-6">
+    <a href={localePath(lang)} class="brand no-underline hover:no-underline">
+      {t.brand.name}<span>{t.brand.tagline}</span>
     </a>
 
-    <div class="flex items-center gap-2 lg:gap-6">
-      <div class="hidden items-center gap-6 lg:flex">
-        {
-          links.map((l) => (
-            <a
-              href={l.href}
-              class="text-sm font-medium text-text no-underline hover:text-accent hover:no-underline"
-            >
-              {l.label}
-            </a>
-          ))
-        }
-      </div>
-
-      <!-- Language switcher. A real <a> so it works without JS and is
-           crawlable; the hash is grafted on at click time in nav.ts. -->
+    <nav class="hidden items-center gap-[30px] font-sans text-[0.90625rem] lg:flex">
+      {
+        links.map((l) => (
+          <a href={l.href} class="text-body no-underline hover:underline">
+            {l.label}
+          </a>
+        ))
+      }
       <a
         id="langSwitch"
         href={otherHref}
@@ -70,68 +52,58 @@ const links = [
         hreflang={LANG_TAG[other]}
         lang={LANG_TAG[other]}
         rel="alternate"
-        class="rounded-md border border-border px-2.5 py-1.5 font-mono text-2xs uppercase tracking-[0.08em] text-text-muted no-underline hover:border-accent hover:text-accent hover:no-underline"
-        aria-label={t.nav.language}
+        aria-label={t.nav.otherLanguageLabel}
+        class="border-l border-line pl-[26px] text-muted no-underline hover:underline"
       >
         {t.nav.otherLanguage}
       </a>
+    </nav>
 
-      <button
-        id="themeToggle"
-        type="button"
-        class="grid size-9 place-items-center rounded-md border border-border text-text-muted hover:border-accent hover:text-accent"
-        aria-label={t.nav.theme}
+    <!-- Below the desktop breakpoint the reference design simply hid the nav
+         with no menu at all, leaving every section unreachable on a phone.
+         A native <details> disclosure needs no script to open or close and is
+         correct for keyboard and screen readers by default. -->
+    <div class="flex items-center gap-4 lg:hidden">
+      <a
+        href={otherHref}
+        hreflang={LANG_TAG[other]}
+        lang={LANG_TAG[other]}
+        rel="alternate"
+        aria-label={t.nav.otherLanguageLabel}
+        class="font-sans text-[0.84375rem] text-muted no-underline"
       >
-        <svg class="size-4 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <circle cx="12" cy="12" r="4"></circle>
-          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
-        </svg>
-        <svg class="hidden size-4 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
-        </svg>
-      </button>
-
-      <a href="#tp-calc" class="btn btn-primary btn-sm hidden sm:inline-block">
-        {t.nav.cta}
+        {t.nav.otherLanguage}
       </a>
-
-      <!-- Mobile menu. A native <details> disclosure: no JS to open or close,
-           correct for keyboard and screen readers by default, and consistent
-           with how the FAQ and the option pills already work. The legacy page
-           simply hid these links below 900px with no menu at all. -->
-      <details class="mnav lg:hidden" id="mobileNav">
+      <details class="mnav" id="mobileNav">
         <summary
-          class="grid size-9 place-items-center rounded-md border border-border text-text-muted"
+          class="grid size-9 place-items-center border border-line text-ink"
           aria-label={t.nav.menu}
         >
-          <svg class="mnav-open size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <svg class="mnav-open size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path d="M3 6h18M3 12h18M3 18h18"></path>
           </svg>
-          <svg class="mnav-close size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <svg class="mnav-close size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path d="M5 5l14 14M19 5L5 19"></path>
           </svg>
         </summary>
-        <div
-          class="absolute inset-x-0 top-full border-b border-border bg-surface px-6 py-5 shadow-lg"
-        >
-          <div class="mx-auto flex max-w-[var(--container-wrap)] flex-col gap-1">
+        <div class="absolute inset-x-0 top-full border-b border-line bg-paper px-8 py-5">
+          <div class="mx-auto flex max-w-[var(--container-wrap)] flex-col">
             {
               links.map((l) => (
                 <a
                   href={l.href}
-                  class="rounded-md px-2 py-2.5 text-base font-medium text-text no-underline hover:bg-surface-sunken hover:no-underline"
+                  class="border-b border-line py-3 font-sans text-base text-body no-underline last:border-b-0"
                 >
                   {l.label}
                 </a>
               ))
             }
-            <a href="#tp-calc" class="btn btn-primary mt-3 sm:hidden">{t.nav.cta}</a>
           </div>
         </div>
       </details>
     </div>
   </div>
-</nav>
+</header>
 
 <script>
   import '../../scripts/nav';

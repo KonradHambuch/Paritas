@@ -1,0 +1,38 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import InlineTool from '../ui/InlineTool.astro';
+import { getDict, type Lang } from '../../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+---
+<section id="sale" class="section section-alt">
+  <div class="wrap">
+    <SectionHead eyebrow={t.sale.eyebrow} heading={t.sale.heading} />
+    <p set:html={t.sale.p1} />
+    <p set:html={t.sale.p2} />
+
+    <div class="overflow-x-auto">
+      <table class="stage-table min-w-[34rem]">
+        <thead>
+          <tr>
+            <th style="width:36%">{t.sale.colStage}</th>
+            <th>{t.sale.colWhat}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            t.sale.stages.map((s) => (
+              <tr>
+                <td>{s.stage}</td>
+                <td>{s.what}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <InlineTool {...t.sale.tool} href="#tool-valuation" />
+  </div>
+</section>

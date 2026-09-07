@@ -2,29 +2,34 @@
 import Base from './Base.astro';
 import Nav from '../components/nav/Nav.astro';
 import Footer from '../components/nav/Footer.astro';
-import { getDict, localePath, type Lang } from '../i18n';
+import { getDict, localePath } from '../i18n';
 
-interface Props { lang: Lang }
-const { lang } = Astro.props;
-const t = getDict(lang);
+/* Bilingual on purpose: Cloudflare serves this single page for every 404,
+   including ones under /hu/, so a Hungarian reader must not land on an
+   English-only dead end. */
+const en = getDict('en');
+const hu = getDict('hu');
 ---
-
-<Base lang={lang} title={t.meta.notFoundTitle}>
-  <Nav lang={lang} />
-  <main class="wrap flex min-h-[60vh] flex-col justify-center py-20">
-    <div class="max-w-[var(--container-prose)]">
-      <div class="mb-4 font-mono text-xs uppercase tracking-[0.14em] text-accent">
-        {t.notFound.eyebrow}
+<Base lang="en" title={en.meta.notFoundTitle}>
+  <Nav lang="en" />
+  <main id="main" class="wrap narrow flex min-h-[55vh] flex-col justify-center gap-10 py-20">
+    <div>
+      <div class="eyebrow">{en.notFound.eyebrow}</div>
+      <h2>{en.notFound.heading}</h2>
+      <p>{en.notFound.body}</p>
+      <div class="flex flex-wrap gap-4">
+        <a class="cta" href={localePath('en')}>{en.notFound.home}</a>
+        <a class="cta" href={`${localePath('en')}#tools`}>{en.notFound.tools}</a>
       </div>
-      <h1 class="mb-4 text-h2 font-bold tracking-display">{t.notFound.heading}</h1>
-      <p class="mb-8 text-lg text-text-muted">{t.notFound.body}</p>
-      <div class="flex flex-wrap gap-3.5">
-        <a href={localePath(lang)} class="btn btn-primary">{t.notFound.home}</a>
-        <a href={`${localePath(lang)}#tp-calc`} class="btn btn-ghost">
-          {t.notFound.calculator}
-        </a>
+    </div>
+    <div class="border-t border-line pt-8" lang="hu">
+      <h2 class="text-[1.5rem]">{hu.notFound.heading}</h2>
+      <p>{hu.notFound.body}</p>
+      <div class="flex flex-wrap gap-4">
+        <a class="cta" href={localePath('hu')}>{hu.notFound.home}</a>
+        <a class="cta" href={`${localePath('hu')}#tools`}>{hu.notFound.tools}</a>
       </div>
     </div>
   </main>
-  <Footer lang={lang} />
+  <Footer lang="en" />
 </Base>

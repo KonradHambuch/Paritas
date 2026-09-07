@@ -1,40 +1,37 @@
-# Threshold and pricing sources
+# Sources for the published numbers
 
-`src/lib/calc/config.ts` is the single source for every regulatory constant and
-every price on the site. The values were carried over unchanged from the
-original single-file page; **the citations below are still to be filled in.**
+`src/lib/tools/config.ts` is the single source for every figure the site
+publishes. The values came from the reference pages; **the citations below are
+still to be filled in.**
 
-For a firm whose pitch is that every important number is traceable to a rule, a
-source or a labelled assumption, an unsourced constant is the one thing the
-repository cannot afford. `assertRulebookFresh()` runs on every build and fails
-it once `lastVerified` is more than twelve months old.
+For a firm whose pitch is that numbers hold up when somebody else looks at
+them, an unsourced threshold is the one thing the repository cannot afford.
+`assertRulebookFresh()` runs on every build and fails it once
+`RULEBOOK.lastVerified` is more than twelve months old.
 
-## Documentation thresholds
+## Transfer pricing (Hungary)
 
-| Constant | Value (EUR) | Stands for | Statute | Verified |
+| Constant | Value | Stands for | Statute | Verified |
 |---|---|---|---|---|
-| `thresholds.PL_serv` | 464 000 | PLN 2M services line | _to be cited_ | 2026-08 |
-| `thresholds.PL_fin` | 2 320 000 | PLN 10M financial line | _to be cited_ | 2026-08 |
-| `thresholds.HU` | 380 000 | HUF 150M aggregate | _to be cited_ | 2026-08 |
-| `thresholds.RO_serv` | 250 000 | RO services band | _to be cited_ | 2026-08 |
-| `thresholds.RO_int` | 200 000 | RO interest band | _to be cited_ | 2026-08 |
-| `thresholds.RO_loanInterestProxy` | 5% | assumed annual interest on principal | assumption, labelled in the UI | 2026-08 |
-| `thresholds.warn` | 70% | "approaching" band | internal policy | — |
+| `TP.threshold` | 150,000,000 HUF | documentation threshold per aggregated transaction, per tax year | _to be cited_ | 2026-09 |
+| `TP.masterFile` | 500,000,000 HUF | master file trigger on total related-party transactions | _to be cited_ | 2026-09 |
+| `TP.simplifiedRecharge` | 500,000,000 HUF | cost recharges above this may use a simplified local file | _to be cited_ | 2026-09 |
+| `TP.penalty` | 5,000,000 HUF | default penalty per transaction and per document | _to be cited_ | 2026-09 |
+| `TP.penaltyRepeat` | 10,000,000 HUF | penalty for a repeated default | _to be cited_ | 2026-09 |
 
-## Open question for the Hungarian page
+The filing deadline the calculator states — the corporate tax return date,
+31 May for calendar-year taxpayers — should be cited alongside these.
 
-`thresholds.HU` is an EUR approximation of a HUF statutory figure. A Hungarian
-reader — and their auditor — will cite the HUF number. Options:
+## Valuation multiples
 
-1. Keep EUR only (consistent with the firm quoting in EUR everywhere).
-2. Show the statutory HUF figure with EUR in parentheses on the `/hu/` page.
+`SECTOR_MULTIPLES` are indicative EBITDA bands for Hungarian mid-market
+transactions. They are market observation rather than statute, so what they
+need is a stated basis and a date: which transactions, over what period, and
+who compiled them. Without that the calculator asserts a range it cannot
+defend, which is the failure the site's own copy warns about.
 
-Option 2 needs a dated FX assumption and a policy for refreshing it, and would
-add a currency dimension to `CONFIG`. Not implemented — decide before launch.
+## Readiness weights
 
-## Exposure and pricing
-
-`exposure.*` and `tp.*` / `dd.*` are commercial policy rather than statute,
-except the penalty figures (`plFiscal`, `huPerRecord`, `usFormPerYear`) which
-approximate published penalty ranges and should be cited alongside the
-thresholds above.
+`READINESS_WEIGHTS` are a judgement about which gaps cost the most in a
+transaction, not a measured quantity. They sum to 100, which the tests assert.
+They are worth revisiting after a handful of real engagements.

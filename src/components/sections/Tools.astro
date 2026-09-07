@@ -1,0 +1,145 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import { fill, getDict, type Lang } from '../../i18n';
+import { SECTOR_KEYS, READINESS_KEYS, TP } from '../../lib/tools/config';
+import { makeFormat } from '../../lib/format';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+const fmt = makeFormat(lang);
+
+const tp = t.tools.tp;
+const val = t.tools.valuation;
+const rd = t.tools.readiness;
+
+const threshold = fmt.huf(TP.threshold);
+
+/* Widened here rather than inline: a type assertion inside a template
+   expression confuses Astro's JSX parser. */
+const sectorLabels: Record<string, string> = val.sectors;
+const questionLabels: Record<string, string> = rd.questions;
+---
+
+<section id="tools" class="section section-alt">
+  <div class="wrap">
+    <SectionHead
+      eyebrow={t.tools.eyebrow}
+      heading={t.tools.heading}
+      lede={t.tools.lede}
+    />
+
+    <!-- ── 01 · transfer pricing ────────────────────────────── -->
+    <div class="calc tool" id="tool-tp">
+      <div class="eyebrow mb-3">{tp.num}</div>
+      <h3 class="mb-2 text-[1.4375rem]">{tp.h}</h3>
+      <p class="text-sm">{fill(tp.p, { threshold })}</p>
+
+      <div class="calc-row mt-[22px]">
+        <div class="field">
+          <label for="tp-rel">{tp.relatedLabel}</label>
+          <select id="tp-rel">
+            <option value="">{tp.select}</option>
+            <option value="yes">{tp.yes}</option>
+            <option value="no">{tp.no}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="tp-amt">{tp.amountLabel}</label>
+          <input
+            id="tp-amt"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder={tp.amountPlaceholder}
+          />
+        </div>
+      </div>
+
+      <div id="tp-out" role="status" aria-live="polite"></div>
+      <div class="disc">{tp.disclaimer}</div>
+    </div>
+
+    <!-- ── 02 · valuation ───────────────────────────────────── -->
+    <div class="calc tool" id="tool-valuation">
+      <div class="eyebrow mb-3">{val.num}</div>
+      <h3 class="mb-2 text-[1.4375rem]">{val.h}</h3>
+      <p class="text-sm">{val.p}</p>
+
+      <div class="calc-row mt-[22px]">
+        <div class="field">
+          <label for="cv-sect">{val.sectorLabel}</label>
+          <select id="cv-sect">
+            <option value="">{val.select}</option>
+            {
+              SECTOR_KEYS.map((k) => (
+                <option value={k}>{sectorLabels[k]}</option>
+              ))
+            }
+          </select>
+        </div>
+        <div class="field">
+          <label for="cv-ebitda">{val.ebitdaLabel}</label>
+          <input
+            id="cv-ebitda"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder={val.ebitdaPlaceholder}
+          />
+        </div>
+      </div>
+      <div class="calc-row">
+        <div class="field">
+          <label for="cv-debt">{val.debtLabel}</label>
+          <input
+            id="cv-debt"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder={val.debtPlaceholder}
+          />
+        </div>
+        <div></div>
+      </div>
+
+      <div id="cv-out" role="status" aria-live="polite"></div>
+      <div class="disc">{val.disclaimer}</div>
+    </div>
+
+    <!-- ── 03 · diligence readiness ─────────────────────────── -->
+    <div class="calc tool" id="tool-readiness">
+      <div class="eyebrow mb-3">{rd.num}</div>
+      <h3 class="mb-2 text-[1.4375rem]">{rd.h}</h3>
+      <p class="text-sm">{rd.p}</p>
+
+      <!-- Each question is a radiogroup of two buttons rather than a pair of
+           plain <button>s, so the state is exposed to assistive tech and the
+           whole set is reachable by keyboard. -->
+      <div id="dd-q" class="mt-6">
+        {
+          READINESS_KEYS.map((key) => (
+            <div class="ddrow">
+              <span id={`dd-label-${key}`}>{questionLabels[key]}</span>
+              <span class="flex flex-none gap-2" role="radiogroup" aria-labelledby={`dd-label-${key}`}>
+                <button type="button" class="ddb" role="radio" aria-checked="false" data-q={key} data-v="1">
+                  {rd.yes}
+                </button>
+                <button type="button" class="ddb" role="radio" aria-checked="false" data-q={key} data-v="0">
+                  {rd.no}
+                </button>
+              </span>
+            </div>
+          ))
+        }
+      </div>
+
+      <div id="dd-out" role="status" aria-live="polite"></div>
+      <div class="disc">{rd.disclaimer}</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../../scripts/tools';
+</script>

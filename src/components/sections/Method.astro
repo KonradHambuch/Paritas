@@ -1,0 +1,38 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import InlineTool from '../ui/InlineTool.astro';
+import { fill, getDict, type Lang } from '../../i18n';
+import { TP } from '../../lib/tools/config';
+import { makeFormat } from '../../lib/format';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+const fmt = makeFormat(lang);
+
+/* The threshold is read from the engine config rather than typed into the
+   copy, so the prose and the calculator can never quote different numbers. */
+const threshold = fmt.huf(TP.threshold);
+---
+<section id="method" class="section section-alt">
+  <div class="wrap">
+    <SectionHead eyebrow={t.method.eyebrow} heading={t.method.heading} />
+    <div class="mt-[38px] grid gap-8 md:grid-cols-3 md:gap-10">
+      {
+        t.method.items.map((s) => (
+          <div class="svc">
+            <h3>{s.h}</h3>
+            <p>{s.p}</p>
+          </div>
+        ))
+      }
+    </div>
+    <InlineTool
+      lbl={t.method.tool.lbl}
+      h={t.method.tool.h}
+      p={fill(t.method.tool.p, { threshold })}
+      cta={t.method.tool.cta}
+      href="#tool-tp"
+    />
+  </div>
+</section>

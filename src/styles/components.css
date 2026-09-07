@@ -1,251 +1,323 @@
-/* Patterns whose state is toggled by script or by a native element, so they
-   cannot live purely as utility classes in the markup. Everything else is
-   Tailwind utilities in the .astro files. */
+/* Repeated patterns from the reference design. Kept as classes rather than
+   inlined utilities where the same shape recurs across many sections, or
+   where a state is toggled by script. */
 
 @layer components {
   .wrap {
     max-width: var(--container-wrap);
     margin-inline: auto;
-    padding-inline: 1.5rem;
+    padding-inline: 2rem;
   }
 
-  .section-y {
-    padding-block: clamp(3.5rem, 8vw, 6.5rem);
+  .narrow {
+    max-width: var(--container-narrow);
   }
 
-  /* ── buttons ─────────────────────────────────────────────────── */
-  .btn {
-    display: inline-block;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: 0.9375rem;
-    padding: 0.75rem 1.375rem;
-    border-radius: 0.5rem;
-    border: none;
-    cursor: pointer;
-    text-align: center;
-    transition:
-      transform 0.12s ease,
-      box-shadow 0.12s ease,
-      background-color 0.12s ease;
+  .section {
+    padding-block: 4.5rem;
+    border-bottom: 1px solid var(--color-line);
   }
 
-  .btn:hover {
-    text-decoration: none;
+  .section-alt {
+    background: var(--color-soft);
   }
 
-  .btn-primary {
-    background: var(--accent);
-    color: var(--on-accent);
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.19em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 1.25rem;
   }
 
-  .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 35%, transparent);
+  /* A service block: a heavy rule above the heading, nothing else. */
+  .svc {
+    border-top: 2px solid var(--color-ink);
+    padding-top: 1.25rem;
   }
 
-  .btn-ghost {
-    background: transparent;
-    color: var(--text-strong);
-    border: 1.5px solid currentcolor;
+  .svc h3 {
+    margin-bottom: 0.75rem;
   }
 
-  .btn-ghost:hover {
-    background: var(--text-strong);
-    color: var(--surface);
+  .svc p {
+    font-size: var(--text-sm);
+    margin-bottom: 0;
   }
 
-  .btn-sm {
-    padding: 0.5625rem 1rem;
-    font-size: 0.875rem;
+  .rule-sm {
+    width: 2.375rem;
+    height: 2px;
+    background: var(--color-ink);
+    margin-bottom: 1rem;
   }
 
-  /* ── cards ───────────────────────────────────────────────────── */
-  .card {
-    position: relative;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-card);
-    padding: 1.625rem;
-    box-shadow: var(--shadow-card);
+  .role {
+    font-family: var(--font-sans);
+    font-size: 0.78125rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 0.75rem;
   }
 
-  /* The "one spine" motif: a hairline that fades out along the top edge. */
-  .card-spine::before {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    top: 0;
-    height: 1px;
-    border-radius: var(--radius-card) var(--radius-card) 0 0;
-    background: linear-gradient(90deg, var(--accent), transparent 70%);
-  }
-
-  .card-interactive {
-    transition:
-      transform 0.15s ease,
-      box-shadow 0.15s ease;
-  }
-
-  .card-interactive:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lift);
-  }
-
-  /* ── option pills (native inputs own the state) ──────────────── */
-  .opt {
-    position: relative;
-    background: var(--surface-raised);
-    border: 1.5px solid var(--border);
-    border-radius: 0.5rem;
-    padding: 0.5625rem 0.9375rem;
-    font-size: 0.875rem;
-    cursor: pointer;
-    user-select: none;
-    transition:
-      border-color 0.12s ease,
-      background-color 0.12s ease;
-  }
-
-  .opt input {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .opt.sel {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-    font-weight: 600;
-  }
-
-  .opt:focus-within {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
-  }
-
-  /* ── severity pills ──────────────────────────────────────────── */
-  .pill {
-    font-family: var(--font-mono);
-    font-size: 0.65625rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 9999px;
-    white-space: nowrap;
-  }
-
-  .pill-red {
-    background: color-mix(in srgb, var(--sev-red) 18%, transparent);
-    color: var(--sev-red);
-  }
-
-  .pill-amber {
-    background: color-mix(in srgb, var(--sev-amber) 18%, transparent);
-    color: var(--sev-amber);
-  }
-
-  .pill-ok {
-    background: color-mix(in srgb, var(--sev-ok) 18%, transparent);
-    color: var(--sev-ok);
-  }
-
-  .pill-cat {
-    background: var(--surface-raised);
-    color: var(--text-muted);
-  }
-
-  /* ── result panel rows ───────────────────────────────────────── */
-  .quote-line {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 0.875rem;
-    padding-block: 0.625rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .quote-line:last-of-type {
-    border-bottom: none;
-  }
-
-  .oblig-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.625rem;
-    font-size: 0.875rem;
-    padding-block: 0.5625rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .oblig-row:last-child {
-    border-bottom: none;
-  }
-
-  /* ── pricing tables ──────────────────────────────────────────── */
-  .ptable {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--surface-raised);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-card);
-    overflow: hidden;
-    font-size: 0.875rem;
-  }
-
-  .ptable th {
-    background: var(--color-ink-900);
-    color: #fff;
-    font-family: var(--font-display);
-    font-weight: 600;
-    text-align: left;
-    padding: 0.8125rem 1rem;
-  }
-
-  .ptable td {
-    padding: 0.875rem 1rem;
-    border-top: 1px solid var(--border);
-    vertical-align: top;
-  }
-
-  .ptable tbody tr:nth-child(even) td {
-    background: var(--surface-sunken);
-  }
-
-  /* ── FAQ disclosure ──────────────────────────────────────────── */
-  .faq-item summary {
-    cursor: pointer;
+  /* Hairline list, used for requirements and gap lists. */
+  .plain {
     list-style: none;
+    margin-block: 1.125rem;
+  }
+
+  .plain li {
+    padding-block: 0.6875rem;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 1.03125rem;
+  }
+
+  .plain li:last-child {
+    border-bottom: none;
+  }
+
+  /* ── tools ───────────────────────────────────────────────────── */
+  .calc {
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    padding: 2.375rem;
+    margin-top: 2.125rem;
+  }
+
+  .tool + .tool {
+    border-top: 1px solid var(--color-line);
+    padding-top: 2.75rem;
+    margin-top: 2.75rem;
+  }
+
+  .calc-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.375rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .field label {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 0.4375rem;
+    letter-spacing: 0.02em;
+  }
+
+  .field input,
+  .field select {
+    width: 100%;
+    padding: 0.8125rem 0.875rem;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    background: var(--color-paper);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--color-ink);
+  }
+
+  .field input:focus,
+  .field select:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+
+  .result {
+    margin-top: 1.875rem;
+    padding-top: 1.75rem;
+    border-top: 2px solid var(--color-ink);
+  }
+
+  .verdict {
+    font-size: 1.4375rem;
+    color: var(--color-ink);
+    line-height: 1.4;
+    margin-bottom: 0.875rem;
+  }
+
+  .verdict-warn {
+    color: var(--color-warn);
+  }
+
+  .detail {
+    font-size: var(--text-sm);
+    margin-bottom: 0.5625rem;
+    max-width: none;
+  }
+
+  .detail b {
+    color: var(--color-ink);
+    font-weight: 400;
+  }
+
+  /* Tabular figures so ranges line up column-wise. */
+  .figure {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+  }
+
+  .disc {
+    font-size: var(--text-fine);
+    color: var(--color-muted);
+    margin-top: 1.375rem;
+    padding-top: 1.125rem;
+    border-top: 1px solid var(--color-line);
+    max-width: none;
+  }
+
+  /* ── readiness questions ─────────────────────────────────────── */
+  .ddrow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 0.875rem;
-    padding: 1rem 1.25rem;
-    font-family: var(--font-display);
-    font-weight: 600;
+    gap: 1.25rem;
+    padding-block: 0.8125rem;
+    border-bottom: 1px solid var(--color-line);
+    font-size: var(--text-sm);
+  }
+
+  .ddrow:last-child {
+    border-bottom: none;
+  }
+
+  .ddb {
+    font-family: var(--font-sans);
+    font-size: 0.84375rem;
+    padding: 0.4375rem 1.0625rem;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    background: var(--color-paper);
+    color: var(--color-body);
+    cursor: pointer;
+  }
+
+  .ddb:hover {
+    border-color: var(--color-ink);
+  }
+
+  .ddb[aria-checked='true'] {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: #fff;
+  }
+
+  @media (max-width: 640px) {
+    .ddrow {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.625rem;
+    }
+  }
+
+  /* ── call-out linking a section to its tool ──────────────────── */
+  .inline-tool {
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-left: 3px solid var(--color-ink);
+    padding: 1.625rem 1.75rem;
+    margin-top: 2rem;
+    max-width: var(--container-prose);
+  }
+
+  .inline-tool .lbl {
+    font-family: var(--font-sans);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .inline-tool h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .inline-tool p {
     font-size: 0.96875rem;
+    margin-bottom: 0.875rem;
   }
 
-  .faq-item summary::-webkit-details-marker {
-    display: none;
+  .inline-tool a {
+    font-family: var(--font-sans);
+    font-size: 0.90625rem;
   }
 
-  .faq-item summary::after {
-    content: '+';
-    font-family: var(--font-mono);
-    color: var(--accent);
-    font-size: 1.125rem;
-    flex-shrink: 0;
+  /* ── misc ────────────────────────────────────────────────────── */
+  .cta {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    border: 1px solid var(--color-ink);
+    border-radius: 2px;
+    color: var(--color-ink);
+    padding: 0.875rem 1.875rem;
+    margin-top: 0.875rem;
   }
 
-  .faq-item[open] summary::after {
-    content: '−';
+  .cta:hover {
+    background: var(--color-ink);
+    color: #fff;
+    text-decoration: none;
   }
 
-  .faq-item[open] summary {
-    border-bottom: 1px solid var(--border);
+  .stage-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.625rem;
+    font-size: var(--text-sm);
   }
 
-  /* ── mobile nav disclosure ───────────────────────────────────── */
+  .stage-table th {
+    text-align: left;
+    font-family: var(--font-sans);
+    font-size: var(--text-eyebrow);
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    font-weight: 600;
+    padding: 0 0.875rem 0.75rem 0;
+    border-bottom: 1px solid var(--color-ink);
+  }
+
+  .stage-table td {
+    padding: 0.9375rem 0.875rem 0.9375rem 0;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: top;
+  }
+
+  .stage-table td:first-child {
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+
+  .brand {
+    font-family: var(--font-serif);
+    font-size: 1.375rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+
+  .brand span {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.59375rem;
+    letter-spacing: 0.22em;
+    color: var(--color-muted);
+    margin-top: 3px;
+    text-transform: none;
+  }
+
+  /* Mobile menu: a native <details> disclosure, so it opens and closes with
+     no script and is correct for keyboard and screen readers by default.
+     The reference design simply hid the nav below 820px with no menu at all. */
   .mnav > summary {
     list-style: none;
     cursor: pointer;
@@ -255,10 +327,7 @@
     display: none;
   }
 
-  .mnav[open] .mnav-open {
-    display: none;
-  }
-
+  .mnav[open] .mnav-open,
   .mnav:not([open]) .mnav-close {
     display: none;
   }

@@ -1,0 +1,22 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import { getDict, type Lang } from '../../i18n';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+---
+<section id="services" class="section">
+  <div class="wrap">
+    <SectionHead eyebrow={t.services.eyebrow} heading={t.services.heading} />
+    <div class="mt-[38px] grid gap-8 md:grid-cols-2 md:gap-[52px]">
+      {
+        t.services.items.map((s) => (
+          <div class="svc">
+            <h3>{s.h}</h3>
+            <p>{s.p}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
