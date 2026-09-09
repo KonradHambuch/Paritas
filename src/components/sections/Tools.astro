@@ -1,7 +1,8 @@
 ---
 import SectionHead from '../ui/SectionHead.astro';
+import GuideRequest from '../ui/GuideRequest.astro';
 import { fill, getDict, type Lang } from '../../i18n';
-import { SECTOR_KEYS, READINESS_KEYS, TP } from '../../lib/tools/config';
+import { SECTOR_KEYS, READINESS_KEYS, TP, TP_TYPE_KEYS } from '../../lib/tools/config';
 import { makeFormat } from '../../lib/format';
 
 interface Props { lang: Lang }
@@ -12,11 +13,13 @@ const fmt = makeFormat(lang);
 const tp = t.tools.tp;
 const val = t.tools.valuation;
 const rd = t.tools.readiness;
+const tax = t.tools.tax;
 
 const threshold = fmt.huf(TP.threshold);
 
 /* Widened here rather than inline: a type assertion inside a template
    expression confuses Astro's JSX parser. */
+const tpTypeLabels: Record<string, string> = tp.types;
 const sectorLabels: Record<string, string> = val.sectors;
 const questionLabels: Record<string, string> = rd.questions;
 ---
@@ -35,29 +38,53 @@ const questionLabels: Record<string, string> = rd.questions;
       <h3 class="mb-2 text-[1.4375rem]">{tp.h}</h3>
       <p class="text-sm">{fill(tp.p, { threshold })}</p>
 
-      <div class="calc-row mt-[22px]">
-        <div class="field">
-          <label for="tp-rel">{tp.relatedLabel}</label>
-          <select id="tp-rel">
-            <option value="">{tp.select}</option>
-            <option value="yes">{tp.yes}</option>
-            <option value="no">{tp.no}</option>
-          </select>
+      <div class="mt-[22px]">
+        <p class="mb-3 max-w-none font-sans text-[0.8125rem] tracking-[0.02em] text-muted">
+          {tp.rowsLabel}
+        </p>
+
+        <!-- Rendered server-side so the form works before the script loads;
+             the script adds and removes rows from here. -->
+        <div id="tp-rows">
+          {
+            [0, 1, 2].map((i) => (
+              <div class="trrow" data-row={i}>
+                <span class="trn">{i + 1}.</span>
+                <select aria-label={tp.rowsLabel} data-field="type">
+                  {TP_TYPE_KEYS.map((k, ki) => (
+                    <option value={k} selected={ki === i}>
+                      {tpTypeLabels[k]}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  data-field="value"
+                  placeholder={tp.valuePlaceholder}
+                  aria-label={tp.valuePlaceholder}
+                />
+                <button type="button" class="trx" data-remove aria-label={tp.remove}>
+                  &times;
+                </button>
+              </div>
+            ))
+          }
         </div>
-        <div class="field">
-          <label for="tp-amt">{tp.amountLabel}</label>
-          <input
-            id="tp-amt"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder={tp.amountPlaceholder}
-          />
-        </div>
+
+        <button type="button" class="tp-add" id="tp-add" data-max={TP.maxRows}>
+          {tp.add}
+        </button>
       </div>
 
       <div id="tp-out" role="status" aria-live="polite"></div>
-      <div class="disc">{tp.disclaimer}</div>
+      <GuideRequest lang={lang} doc="tp" />
+      <div class="disc">
+        <b class="font-normal text-ink">{tp.disclaimerLead}</b>{' '}{tp.disclaimerBody}
+        <br /><br />
+        {tp.disclaimerTail}
+      </div>
     </div>
 
     <!-- ── 02 · valuation ───────────────────────────────────── -->
@@ -70,41 +97,18 @@ const questionLabels: Record<string, string> = rd.questions;
         <div class="field">
           <label for="cv-sect">{val.sectorLabel}</label>
           <select id="cv-sect">
-            <option value="">{val.select}</option>
-            {
-              SECTOR_KEYS.map((k) => (
-                <option value={k}>{sectorLabels[k]}</option>
-              ))
-            }
+            <option value="">{val.selectSector}</option>
+            {SECTOR_KEYS.map((k) => <option value={k}>{sectorLabels[k]}</option>)}
           </select>
-        </div>
-        <div class="field">
-          <label for="cv-ebitda">{val.ebitdaLabel}</label>
-          <input
-            id="cv-ebitda"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder={val.ebitdaPlaceholder}
-          />
-        </div>
-      </div>
-      <div class="calc-row">
-        <div class="field">
-          <label for="cv-debt">{val.debtLabel}</label>
-          <input
-            id="cv-debt"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder={val.debtPlaceholder}
-          />
         </div>
         <div></div>
       </div>
 
+      <!-- The sector decides which input appears, so the fields are built by
+           the script once a sector is chosen. -->
+      <div id="cv-inputs"></div>
       <div id="cv-out" role="status" aria-live="polite"></div>
-      <div class="disc">{val.disclaimer}</div>
+      <GuideRequest lang={lang} doc="valuation" />
     </div>
 
     <!-- ── 03 · diligence readiness ─────────────────────────── -->
@@ -113,15 +117,18 @@ const questionLabels: Record<string, string> = rd.questions;
       <h3 class="mb-2 text-[1.4375rem]">{rd.h}</h3>
       <p class="text-sm">{rd.p}</p>
 
-      <!-- Each question is a radiogroup of two buttons rather than a pair of
-           plain <button>s, so the state is exposed to assistive tech and the
-           whole set is reachable by keyboard. -->
       <div id="dd-q" class="mt-6">
         {
           READINESS_KEYS.map((key) => (
             <div class="ddrow">
-              <span id={`dd-label-${key}`}>{questionLabels[key]}</span>
-              <span class="flex flex-none gap-2" role="radiogroup" aria-labelledby={`dd-label-${key}`}>
+              <span class="flex-1 pr-4" id={`dd-label-${key}`}>
+                {questionLabels[key]}
+              </span>
+              <span
+                class="flex flex-none gap-2"
+                role="radiogroup"
+                aria-labelledby={`dd-label-${key}`}
+              >
                 <button type="button" class="ddb" role="radio" aria-checked="false" data-q={key} data-v="1">
                   {rd.yes}
                 </button>
@@ -135,7 +142,43 @@ const questionLabels: Record<string, string> = rd.questions;
       </div>
 
       <div id="dd-out" role="status" aria-live="polite"></div>
+      <GuideRequest lang={lang} doc="readiness" />
       <div class="disc">{rd.disclaimer}</div>
+    </div>
+
+    <!-- ── 04 · tax recovery ────────────────────────────────── -->
+    <div class="calc tool" id="tool-tax">
+      <div class="eyebrow mb-3">{tax.num}</div>
+      <h3 class="mb-2 text-[1.4375rem]">{tax.h}</h3>
+      <p class="text-sm">{tax.p}</p>
+
+      <div class="calc-row mt-[22px]">
+        <div class="field">
+          <label for="tax-rev">{tax.revenueLabel}</label>
+          <input id="tax-rev" type="text" inputmode="numeric" autocomplete="off" placeholder={tax.revenuePlaceholder} />
+        </div>
+        <div class="field">
+          <label for="tax-size">{tax.sizeLabel}</label>
+          <select id="tax-size">
+            <option value="sme">{tax.sizes.sme}</option>
+            <option value="large">{tax.sizes.large}</option>
+          </select>
+        </div>
+      </div>
+      <div class="calc-row">
+        <div class="field">
+          <label for="tax-sub">{tax.subLabel}</label>
+          <input id="tax-sub" type="text" inputmode="numeric" autocomplete="off" placeholder={tax.subPlaceholder} />
+        </div>
+        <div class="field">
+          <label for="tax-rd">{tax.rdLabel}</label>
+          <input id="tax-rd" type="text" inputmode="numeric" autocomplete="off" placeholder={tax.rdPlaceholder} />
+        </div>
+      </div>
+
+      <div id="tax-out" role="status" aria-live="polite"></div>
+      <GuideRequest lang={lang} doc="tax" />
+      <div class="disc">{tax.disclaimer}</div>
     </div>
   </div>
 </section>

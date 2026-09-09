@@ -1,13 +1,13 @@
 export const meta = {
-  title: 'Paritas — Transfer pricing, due diligence, company sale and acquisition',
+  title: 'Cardo — Transfer pricing, due diligence, company sale and acquisition',
   description:
     'Transfer pricing documentation, financial due diligence, company sale and acquisition advisory for mid-market companies.',
   ogLocale: 'en_GB',
-  notFoundTitle: 'Page not found — Paritas',
+  notFoundTitle: 'Page not found — Cardo',
 };
 
 export const brand = {
-  name: 'PARITAS',
+  name: 'CARDO',
   tagline: 'Transfer pricing · Diligence · Transactions',
 };
 
@@ -20,7 +20,7 @@ export const nav = {
     services: 'Services',
     sale: 'Company sale',
     acquisition: 'Acquisition',
-    team: 'Team',
+    tax: 'Tax',
     tools: 'Tools',
     contact: 'Contact',
   },
@@ -34,7 +34,8 @@ export const hero = {
 
 export const services = {
   eyebrow: 'Services',
-  heading: 'Four areas, one purpose: that the numbers hold when it matters.',
+  heading: 'Five areas, one purpose: that the numbers hold when it matters.',
+  feeBadge: 'Success fee',
   items: [
     {
       h: 'Transfer pricing',
@@ -52,30 +53,13 @@ export const services = {
       h: 'Company acquisition',
       p: 'Target search, valuation, negotiation strategy, diligence and post-acquisition integration.',
     },
-  ],
-};
-
-export const team = {
-  eyebrow: 'The team',
-  heading: 'Experienced specialists, separately in each area.',
-  lede: 'Transfer pricing, diligence and transaction advisory — each is handled by the team that has been doing that work for years. One person is accountable for your engagement and stays with you throughout.',
-  members: [
     {
-      h: 'Transfer pricing',
-      role: 'Tax pricing & documentation',
-      p: 'Local and master file documentation, benchmark studies and support during tax authority reviews, under Hungarian and regional rules.',
-    },
-    {
-      h: 'Financial due diligence',
-      role: 'Due diligence',
-      p: 'Buy-side and sell-side reviews, revenue quality and working capital analysis, from seed stage to mid-market transactions.',
-    },
-    {
-      h: 'Transactions',
-      role: 'Sale & acquisition',
-      p: 'The full transaction process — valuation, documentation, buyer and target search, negotiation and closing.',
+      h: 'Tax recovery',
+      p: 'We review five years back for what was left in the local business tax base. If we find nothing, it costs nothing.',
     },
   ],
+  nameNote:
+    '<b>About the name.</b> <i>Cardo</i> is Latin for the hinge — the point a door turns on. It is also the root of “cardinal”: the thing that matters most, because everything else depends on it. Selling a company, making an acquisition or facing a tax audit is exactly that kind of point in an owner’s life.',
 };
 
 export const sale = {
@@ -178,16 +162,62 @@ export const method = {
     lbl: 'Free tool',
     h: 'Do you have a documentation obligation?',
     /** {threshold} is filled from the engine config. */
-    p: 'Two inputs, and it shows whether your transaction reaches the {threshold} threshold, what must be prepared, and the penalty exposure.',
+    p: 'Enter your transactions, and it shows whether any of them reaches the {threshold} threshold, what must be prepared, and the penalty exposure.',
     cta: 'Open the transfer pricing check →',
   },
+};
+
+export const taxRecovery = {
+  eyebrow: 'Tax recovery — success fee',
+  heading: 'Most companies pay more local business tax than they need to.',
+  lede: 'Not because they calculate it wrongly. Because the conditions for deduction are strict, and one missing sentence in a contract or on an invoice removes the whole item.',
+  items: [
+    {
+      h: 'Subcontractor performance',
+      p: 'Deductible — but only where there is a written contract with the customer <b>and</b> the subcontractor. This is the condition that fails most often.',
+    },
+    {
+      h: 'Recharged services',
+      p: 'Also deductible — but the contract must allow the recharge and the invoice must show it. If it is not on the invoice, the deduction is lost.',
+    },
+    {
+      h: 'R&D spend',
+      p: 'Reduces the tax base, and a separate corporate tax credit may apply. Many companies do development that qualifies as R&D without ever calling it that.',
+    },
+    {
+      h: 'Innovation contribution',
+      p: 'Sits on the same tax base. If the base falls, this falls too — and most companies forget it.',
+    },
+    {
+      h: 'Material cost and COGS',
+      p: 'Misclassified items that would be deductible.',
+    },
+    {
+      h: 'Five years',
+      p: 'Self-revision reaches back five years. Every year that passes, one year of recoverable tax is lost permanently.',
+      urgent: true,
+    },
+  ],
+  tool: {
+    lbl: 'Free tool',
+    h: 'How much tax did you overpay?',
+    p: 'Four inputs, and it shows how much may still be sitting in the last five years.',
+    cta: 'Open the tax recovery calculator →',
+  },
+  howHeading: 'How it works',
+  how: [
+    'We review the last five years of returns and the contracts behind them.',
+    'We tell you what can be recovered — and what cannot be defended.',
+    'We prepare the self-revision and run the procedure.',
+    '<b>The fee is a percentage of what is recovered. If we find nothing, it costs nothing.</b>',
+  ],
 };
 
 export const contact = {
   eyebrow: 'Contact',
   heading: 'Start with a conversation.',
   lede: 'Twenty minutes, no charge. If the honest answer is that it is not the right time, we will say so.',
-  email: 'hello@paritas.eu',
+  email: 'hello@cardoadvisory.com',
 };
 
 export const footer = {

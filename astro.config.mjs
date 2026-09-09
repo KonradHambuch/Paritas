@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://paritas.eu',
+  site: 'https://cardoadvisory.com',
   output: 'static',
   build: { format: 'directory', inlineStylesheets: 'auto' },
   i18n: {

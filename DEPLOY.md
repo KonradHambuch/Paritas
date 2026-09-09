@@ -30,12 +30,12 @@ GitHub secret.
 ## Custom domain
 
 In the Worker → **Settings → Domains & Routes → Add → Custom domain** →
-`paritas.eu`.
+`cardoadvisory.com`.
 
 If the domain's nameservers are on Cloudflare, the DNS record and certificate
 are created for you; otherwise Cloudflare shows the record to add at your
-registrar. Add `www.paritas.eu` too and point it at the apex — the apex is
-canonical, because `astro.config.mjs` sets `site: 'https://paritas.eu'`.
+registrar. Add `www.cardoadvisory.com` too and point it at the apex — the apex is
+canonical, because `astro.config.mjs` sets `site: 'https://cardoadvisory.com'`.
 
 ## The three files that configure this
 
@@ -95,5 +95,5 @@ git show 9d996db:Caddyfile
 git show 9d996db:fly.toml
 ```
 
-Note that `paritas` is taken as a fly app name by an unrelated site, so those
-files use `paritas-eu`.
+Note that `cardo` is taken as a fly app name by an unrelated site, so those
+files use `cardo`.

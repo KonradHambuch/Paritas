@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { en } from '../src/i18n/en';
 import { hu } from '../src/i18n/hu';
-import { READINESS_KEYS, SECTOR_KEYS } from '../src/lib/tools/config';
+import { READINESS_KEYS, SECTOR_KEYS, TP_TYPE_KEYS } from '../src/lib/tools/config';
 
 type Shape = { [k: string]: string | Shape };
 
@@ -79,9 +79,19 @@ describe('dictionary covers every engine key', () => {
   it.each([
     ['en', en],
     ['hu', hu],
-  ])('%s has a question for every readiness key', (_name, dict) => {
+  ])('%s has a question and an explanation for every readiness key', (_name, dict) => {
     const questions = dict.tools.readiness.questions as Record<string, string>;
+    const why = dict.tools.readiness.why as Record<string, string>;
     expect(Object.keys(questions).sort()).toEqual([...READINESS_KEYS].sort());
+    expect(Object.keys(why).sort()).toEqual([...READINESS_KEYS].sort());
+  });
+
+  it.each([
+    ['en', en],
+    ['hu', hu],
+  ])('%s has a label for every transaction type', (_name, dict) => {
+    const types = dict.tools.tp.types as Record<string, string>;
+    expect(Object.keys(types).sort()).toEqual([...TP_TYPE_KEYS].sort());
   });
 });
 
@@ -91,11 +101,13 @@ describe('placeholders resolve', () => {
   const expected: Array<[string, (d: typeof en) => string]> = [
     ['{threshold}', (d) => d.tools.tp.p],
     ['{threshold}', (d) => d.method.tool.p],
-    ['{masterFile}', (d) => d.tools.tp.result.need2],
-    ['{penaltyRepeat}', (d) => d.tools.tp.result.penaltyValue],
-    ['{simplified}', (d) => d.tools.tp.result.simplified],
+    ['{threshold}', (d) => d.tools.tp.result.thresholdNote],
+    ['{masterFile}', (d) => d.tools.tp.result.masterYes],
+    ['{masterFile}', (d) => d.tools.tp.result.masterNo],
+    ['{penaltyRepeat}', (d) => d.tools.tp.result.penaltyNote],
     ['{answered}', (d) => d.tools.readiness.result.progress],
     ['{total}', (d) => d.tools.readiness.result.progress],
+    ['{years}', (d) => d.tools.tax.result.total],
   ];
 
   it.each([
@@ -115,9 +127,9 @@ describe('placeholders resolve', () => {
       'threshold',
       'masterFile',
       'penaltyRepeat',
-      'simplified',
       'answered',
       'total',
+      'years',
     ]);
     const stray: string[] = [];
     walkStrings(dict, (path, value) => {

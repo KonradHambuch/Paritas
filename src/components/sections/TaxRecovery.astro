@@ -1,0 +1,45 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import InlineTool from '../ui/InlineTool.astro';
+import { getDict, type Lang } from '../../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = getDict(lang);
+---
+
+<section id="tax-recovery" class="section section-alt">
+  <div class="wrap">
+    <SectionHead
+      eyebrow={t.taxRecovery.eyebrow}
+      heading={t.taxRecovery.heading}
+      lede={t.taxRecovery.lede}
+    />
+    <div class="mt-[38px] grid gap-8 md:grid-cols-3 md:gap-10">
+      {
+        t.taxRecovery.items.map((s) => (
+          <div class="svc" style={'urgent' in s && s.urgent ? 'border-top-color:var(--color-warn)' : undefined}>
+            <h3>{s.h}</h3>
+            <p set:html={s.p} />
+          </div>
+        ))
+      }
+    </div>
+
+    <InlineTool {...t.taxRecovery.tool} href="#tool-tax" />
+
+    <div class="methodbox mt-[26px]">
+      <b>{t.taxRecovery.howHeading}</b>
+      <span>
+        {
+          t.taxRecovery.how.map((step, i) => (
+            <Fragment>
+              {i + 1}. <Fragment set:html={step} />
+              {i < t.taxRecovery.how.length - 1 && <br />}
+            </Fragment>
+          ))
+        }
+      </span>
+    </div>
+  </div>
+</section>

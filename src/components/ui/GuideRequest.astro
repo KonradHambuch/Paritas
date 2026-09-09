@@ -1,0 +1,44 @@
+---
+import { getDict, type Lang } from '../../i18n';
+
+type DocKey = 'tp' | 'valuation' | 'readiness' | 'tax';
+
+interface Props {
+  lang: Lang;
+  doc: DocKey;
+}
+
+const { lang, doc } = Astro.props;
+const t = getDict(lang).tools.mail;
+const guide = t.docs[doc];
+
+/*
+ * Present but deliberately inert.
+ *
+ * The reference design told the visitor "Sent. Check your inbox." while only
+ * pinging a /collect URL that does not exist — no mail left, and the address
+ * travelled in a query string. Rather than ship that, the block keeps its
+ * place in the layout with the controls disabled and an honest note.
+ *
+ * To wire it up later: drop the `disabled` attributes, add a POST handler,
+ * and replace `mail.pending` with a real confirmation.
+ */
+---
+
+<div class="mailcap">
+  <div class="lead">{t.lead}</div>
+  <div class="title">
+    {guide.title}<span>{guide.pages}</span>
+  </div>
+  <div class="mailform">
+    <input
+      type="email"
+      placeholder={t.placeholder}
+      aria-label={t.placeholder}
+      autocomplete="email"
+      disabled
+    />
+    <button type="button" disabled>{t.send}</button>
+  </div>
+  <p class="mailnote">{t.pending}</p>
+</div>

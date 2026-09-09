@@ -1,13 +1,13 @@
 export const meta = {
-  title: 'Paritas — Transzferár, átvilágítás, cégeladás és cégvásárlás',
+  title: 'Cardo — Transzferár, átvilágítás, cégeladás és cégvásárlás',
   description:
     'Transzferár-dokumentáció, pénzügyi átvilágítás, cégeladás és cégvásárlás hazai középvállalkozásoknak.',
   ogLocale: 'hu_HU',
-  notFoundTitle: 'A keresett oldal nem található — Paritas',
+  notFoundTitle: 'A keresett oldal nem található — Cardo',
 };
 
 export const brand = {
-  name: 'PARITAS',
+  name: 'CARDO',
   tagline: 'Transzferár · Átvilágítás · Tranzakció',
 };
 
@@ -20,7 +20,7 @@ export const nav = {
     services: 'Szolgáltatások',
     sale: 'Cégeladás',
     acquisition: 'Cégvásárlás',
-    team: 'Csapat',
+    tax: 'Adó',
     tools: 'Eszközök',
     contact: 'Kapcsolat',
   },
@@ -34,7 +34,8 @@ export const hero = {
 
 export const services = {
   eyebrow: 'Szolgáltatások',
-  heading: 'Négy terület, egy cél: hogy a számok álljanak, amikor számít.',
+  heading: 'Öt terület, egy cél: hogy a számok álljanak, amikor számít.',
+  feeBadge: 'Sikerdíjas',
   items: [
     {
       h: 'Transzferár',
@@ -52,37 +53,20 @@ export const services = {
       h: 'Cégvásárlás',
       p: 'Célpontkeresés, értékelés, tárgyalási stratégia, átvilágítás és a vásárlás utáni integráció.',
     },
-  ],
-};
-
-export const team = {
-  eyebrow: 'A csapat',
-  heading: 'Tapasztalt szakértők, minden területen külön.',
-  lede: 'Transzferár, átvilágítás és tranzakciós tanácsadás — mindegyiknél az a csapat dolgozik, amelyik az adott területen évek óta ezt csinálja. A megbízásért egy felelős van, akivel végig kapcsolatban marad.',
-  members: [
     {
-      h: 'Transzferár',
-      role: 'Adóárazás és dokumentáció',
-      p: 'Nagyvállalati és középvállalati transzferár-nyilvántartások, összehasonlító elemzések és hatósági ellenőrzések támogatása magyar és régiós szabályozás szerint.',
-    },
-    {
-      h: 'Pénzügyi átvilágítás',
-      role: 'Due diligence',
-      p: 'Vevői és eladói oldali átvilágítások, bevételi minőség és forgótőke-elemzés, magvető szakasztól középvállalati tranzakciókig.',
-    },
-    {
-      h: 'Tranzakció',
-      role: 'Cégeladás és cégvásárlás',
-      p: 'Teljes tranzakciós folyamat — értékelés, dokumentáció, vevő- és célpontkeresés, tárgyalás és zárás.',
+      h: 'Adóvisszaszerzés',
+      p: 'Öt évre visszamenőleg átnézzük, mi maradt bent az iparűzési adó alapjában. Ha nem találunk semmit, nem kerül semmibe.',
     },
   ],
+  nameNote:
+    '<b>A névről.</b> A <i>cardo</i> latinul a sarokvas — az a pont, amin egy ajtó megfordul. Ebből származik a „kardinális" szó is: ami a legfontosabb, mert minden más ezen múlik. Egy cégeladás, egy felvásárlás vagy egy adóellenőrzés pontosan ilyen pont egy tulajdonos életében.',
 };
 
 export const sale = {
   eyebrow: 'Cégeladás',
   heading: 'Egy cégeladás nem a vevő megtalálásáról szól.',
-  p1: 'Arról szól, hogy amikor a vevő megérkezik, a cég abban az állapotban legyen, ami az értékét valóban tükrözi. Egy eladási folyamat jellemzően <b>négy-hat hónap</b> — de az azt megelőző felkészülés dönti el, hogy mennyit kap érte.',
-  p2: 'A legtöbb árcsökkenés nem alkuban keletkezik. Akkor keletkezik, amikor az átvilágítás olyat talál, amiről az eladó nem tudott — hiányzó szerződést, dokumentálatlan kapcsolt ügyletet, egyetlen vevőtől függő bevételt.',
+  p1: 'Hanem arról, hogy amikor a vevő megérkezik, a cég abban az állapotban legyen, ami az értékét valóban tükrözi. Egy eladási folyamat jellemzően <b>négy-hat hónap</b> — de az azt megelőző felkészülés dönti el, hogy mennyit kap érte.',
+  p2: 'A legtöbb árcsökkenés nem alkuban keletkezik. Hanem amikor az átvilágítás olyat talál, amiről az eladó nem tudott — hiányzó szerződést, dokumentálatlan kapcsolt ügyletet, egyetlen vevőtől függő bevételt.',
   colStage: 'Szakasz',
   colWhat: 'Mi történik',
   stages: [
@@ -177,16 +161,62 @@ export const method = {
   tool: {
     lbl: 'Ingyenes eszköz',
     h: 'Van dokumentációs kötelezettsége?',
-    p: 'Két adat, és megmutatja, hogy az ügylete eléri-e a(z) {threshold} értékhatárt, mit kell elkészíteni és mekkora a bírságkockázat.',
+    p: 'Vigye fel az ügyleteit, és megmutatja, hogy bármelyik eléri-e a(z) {threshold} értékhatárt, mit kell elkészíteni és mekkora a bírságkockázat.',
     cta: 'Transzferár-ellenőrzés megnyitása →',
   },
+};
+
+export const taxRecovery = {
+  eyebrow: 'Adóvisszaszerzés — sikerdíjas',
+  heading: 'A legtöbb cég több iparűzési adót fizet, mint amennyit kellene.',
+  lede: 'Nem azért, mert rosszul számolnak. Azért, mert a levonás feltételei szigorúak, és egy hiányzó mondat a szerződésben vagy a számlán elviszi az egész tételt.',
+  items: [
+    {
+      h: 'Alvállalkozói teljesítés',
+      p: 'Levonható — de csak akkor, ha a megrendelővel <b>és</b> az alvállalkozóval is írásos vállalkozási szerződés van. Ez a feltétel bukik el a leggyakrabban.',
+    },
+    {
+      h: 'Közvetített szolgáltatás',
+      p: 'Szintén levonható — de a szerződésből a közvetítés lehetőségének, a számlából a tényének ki kell derülnie. Ha a számlán nincs ott, a levonás elvész.',
+    },
+    {
+      h: 'K+F ráfordítás',
+      p: 'Csökkenti az adóalapot, és külön társasági adókedvezmény is kapcsolódhat hozzá. Sok cég végez K+F-nek minősülő fejlesztést anélkül, hogy annak nevezné.',
+    },
+    {
+      h: 'Innovációs járulék',
+      p: 'Ugyanazon az adóalapon ül. Ha az alap csökken, ez is csökken — a legtöbben erről elfeledkeznek.',
+    },
+    {
+      h: 'Anyagköltség és ELÁBÉ',
+      p: 'Rosszul besorolt tételek, amelyek levonhatók lennének.',
+    },
+    {
+      h: 'Öt év',
+      p: 'Az önellenőrzés ennyi évre visszamenőleg lehetséges. Minden eltelt évvel egy évnyi visszaszerezhető összeg véglegesen elvész.',
+      urgent: true,
+    },
+  ],
+  tool: {
+    lbl: 'Ingyenes eszköz',
+    h: 'Mennyi adót fizetett feleslegesen?',
+    p: 'Négy adat, és megmutatja, mekkora összeg lehet bent az elmúlt öt évben.',
+    cta: 'Adóvisszaszerzés-kalkulátor megnyitása →',
+  },
+  howHeading: 'Hogyan működik',
+  how: [
+    'Átnézzük az elmúlt öt év bevallásait és a mögöttük lévő szerződéseket.',
+    'Megmondjuk, mennyi hozható vissza — és mennyi az, ami nem védhető.',
+    'Elkészítjük az önellenőrzést és végigvisszük az eljárást.',
+    '<b>A díj a visszaszerzett összeg százaléka. Ha nem találunk semmit, nem kerül semmibe.</b>',
+  ],
 };
 
 export const contact = {
   eyebrow: 'Kapcsolat',
   heading: 'Kezdjük egy beszélgetéssel.',
   lede: 'Húsz perc, díjmentesen. Ha az őszinte válasz az, hogy még nem időszerű, azt fogjuk mondani.',
-  email: 'hello@paritas.eu',
+  email: 'hello@cardoadvisory.com',
 };
 
 export const footer = {

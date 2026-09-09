@@ -2,76 +2,124 @@ import { describe, expect, it } from 'vitest';
 import { runTp } from '../src/lib/tools/tp';
 import { runValuation } from '../src/lib/tools/valuation';
 import { runReadiness } from '../src/lib/tools/readiness';
+import { runTaxRecovery } from '../src/lib/tools/taxRecovery';
 import {
   READINESS_KEYS,
   READINESS_WEIGHTS,
-  SECTOR_MULTIPLES,
+  SECTORS,
+  TAX,
   TP,
   assertRulebookFresh,
+  type ReadinessKey,
 } from '../src/lib/tools/config';
 import { makeFormat, parseAmount } from '../src/lib/format';
 
-describe('transfer pricing threshold', () => {
-  const base = { related: true as const };
-
-  it('returns nothing until the inputs can answer the question', () => {
-    expect(runTp({ related: null, amount: 200_000_000 })).toBeNull();
-    expect(runTp({ related: false, amount: 200_000_000 })).toBeNull();
-    expect(runTp({ ...base, amount: 0 })).toBeNull();
-    expect(runTp({ ...base, amount: Number.NaN })).toBeNull();
+describe('transfer pricing', () => {
+  it('returns nothing until something has been entered', () => {
+    expect(runTp([])).toBeNull();
+    expect(runTp([{ type: 'loan', value: 0 }])).toBeNull();
+    expect(runTp([{ type: 'loan', value: Number.NaN }])).toBeNull();
   });
 
-  it('applies at the threshold, not just above it', () => {
-    expect(runTp({ ...base, amount: TP.threshold - 1 })?.applies).toBe(false);
-    expect(runTp({ ...base, amount: TP.threshold })?.applies).toBe(true);
-    expect(runTp({ ...base, amount: TP.threshold + 1 })?.applies).toBe(true);
+  /* The whole point of the tool: two loans of 80m are one 160m transaction
+     and cross the threshold, even though neither does alone. */
+  it('aggregates rows of the same type before testing the threshold', () => {
+    const r = runTp([
+      { type: 'loan', value: 80_000_000 },
+      { type: 'loan', value: 80_000_000 },
+    ])!;
+    expect(r.aggregates).toHaveLength(1);
+    expect(r.aggregates[0]!.total).toBe(160_000_000);
+    expect(r.aggregates[0]!.required).toBe(true);
+    expect(r.anyRequired).toBe(true);
   });
 
-  it('reports the distance from the threshold in both directions', () => {
-    expect(runTp({ ...base, amount: 180_000_000 })?.difference).toBe(30_000_000);
-    expect(runTp({ ...base, amount: 120_000_000 })?.difference).toBe(30_000_000);
-    expect(runTp({ ...base, amount: TP.threshold })?.difference).toBe(0);
+  it('keeps different types apart', () => {
+    const r = runTp([
+      { type: 'loan', value: 100_000_000 },
+      { type: 'royalty', value: 100_000_000 },
+    ])!;
+    expect(r.aggregates.map((a) => a.total)).toEqual([100_000_000, 100_000_000]);
+    expect(r.anyRequired).toBe(false);
+    expect(r.total).toBe(200_000_000);
   });
 
-  it('carries the published penalty and secondary thresholds', () => {
-    const r = runTp({ ...base, amount: 200_000_000 })!;
+  it('applies at the threshold, not only above it', () => {
+    expect(runTp([{ type: 'loan', value: TP.threshold - 1 }])!.anyRequired).toBe(false);
+    expect(runTp([{ type: 'loan', value: TP.threshold }])!.anyRequired).toBe(true);
+  });
+
+  it('tests the master file against the total across all types', () => {
+    const under = runTp([
+      { type: 'loan', value: 200_000_000 },
+      { type: 'products', value: 200_000_000 },
+    ])!;
+    expect(under.masterFileRequired).toBe(false);
+
+    const over = runTp([
+      { type: 'loan', value: 200_000_000 },
+      { type: 'products', value: 200_000_000 },
+      { type: 'royalty', value: 100_000_000 },
+    ])!;
+    expect(over.total).toBe(500_000_000);
+    expect(over.masterFileRequired).toBe(true);
+  });
+
+  it('ignores blank rows without dropping the ones that follow', () => {
+    const r = runTp([
+      { type: 'loan', value: 0 },
+      { type: 'products', value: 160_000_000 },
+    ])!;
+    expect(r.aggregates).toHaveLength(1);
+    expect(r.aggregates[0]!.type).toBe('products');
+  });
+
+  it('carries the published penalties', () => {
+    const r = runTp([{ type: 'loan', value: 200_000_000 }])!;
     expect(r.penalty).toBe(5_000_000);
     expect(r.penaltyRepeat).toBe(10_000_000);
-    expect(r.masterFileThreshold).toBe(500_000_000);
-    expect(r.simplifiedRechargeThreshold).toBe(500_000_000);
   });
 });
 
 describe('valuation', () => {
-  it('refuses to price a loss or a missing sector', () => {
-    expect(runValuation({ sector: null, ebitda: 80_000_000, netDebt: 0 })).toBeNull();
-    expect(runValuation({ sector: 'it', ebitda: 0, netDebt: 0 })).toBeNull();
-    expect(runValuation({ sector: 'it', ebitda: -5_000_000, netDebt: 0 })).toBeNull();
+  it('refuses a loss or a missing sector', () => {
+    expect(runValuation({ sector: null, base: 80_000_000, netDebt: 0 })).toBeNull();
+    expect(runValuation({ sector: 'it', base: 0, netDebt: 0 })).toBeNull();
+    expect(runValuation({ sector: 'it', base: -5_000_000, netDebt: 0 })).toBeNull();
   });
 
-  it('multiplies EBITDA by the sector band and deducts net debt', () => {
-    const r = runValuation({ sector: 'svc', ebitda: 80_000_000, netDebt: 30_000_000 })!;
+  it('multiplies the base by the sector band and deducts net debt', () => {
+    const r = runValuation({ sector: 'svc', base: 80_000_000, netDebt: 30_000_000 })!;
+    expect(r.method).toBe('ebitda');
     expect(r.multiple).toEqual([4.0, 6.0]);
     expect(r.enterprise).toEqual([320_000_000, 480_000_000]);
     expect(r.equity).toEqual([290_000_000, 450_000_000]);
-    expect(r.equityNegativeAtLowEnd).toBe(false);
+  });
+
+  /* The sector picks the METHOD, not just the number — pricing SaaS or an
+     asset-heavy business on EBITDA would be confidently wrong. */
+  it('selects the method from the sector', () => {
+    expect(runValuation({ sector: 'saas', base: 100, netDebt: 0 })!.method).toBe('revenue');
+    expect(runValuation({ sector: 'realest', base: 100, netDebt: 0 })!.method).toBe('asset');
+    expect(runValuation({ sector: 'holding', base: 100, netDebt: 0 })!.method).toBe('asset');
+    expect(runValuation({ sector: 'prod', base: 100, netDebt: 0 })!.method).toBe('ebitda');
   });
 
   it('treats net cash as an addition', () => {
-    const r = runValuation({ sector: 'trade', ebitda: 10_000_000, netDebt: -5_000_000 })!;
+    const r = runValuation({ sector: 'trade', base: 10_000_000, netDebt: -5_000_000 })!;
     expect(r.equity).toEqual([35_000_000, 50_000_000]);
   });
 
   it('flags a negative equity value rather than printing it bare', () => {
-    const r = runValuation({ sector: 'trade', ebitda: 10_000_000, netDebt: 40_000_000 })!;
+    const r = runValuation({ sector: 'trade', base: 10_000_000, netDebt: 40_000_000 })!;
     expect(r.equity[0]).toBeLessThan(0);
     expect(r.equityNegativeAtLowEnd).toBe(true);
   });
 
   it('has a low end below the high end for every sector', () => {
-    for (const [key, band] of Object.entries(SECTOR_MULTIPLES)) {
-      expect(band[0], key).toBeLessThan(band[1]);
-      expect(band[0], key).toBeGreaterThan(0);
+    for (const [key, s] of Object.entries(SECTORS)) {
+      expect(s.range[0], key).toBeLessThan(s.range[1]);
+      expect(s.range[0], key).toBeGreaterThan(0);
     }
   });
 });
@@ -81,8 +129,7 @@ describe('diligence readiness', () => {
     Object.fromEntries(READINESS_KEYS.map((k) => [k, value]));
 
   it('weights sum to exactly 100', () => {
-    const total = Object.values(READINESS_WEIGHTS).reduce((a, b) => a + b, 0);
-    expect(total).toBe(100);
+    expect(Object.values(READINESS_WEIGHTS).reduce((a, b) => a + b, 0)).toBe(100);
   });
 
   it('scores a perfect and an empty sheet', () => {
@@ -98,35 +145,108 @@ describe('diligence readiness', () => {
   });
 
   it('reports progress before every question is answered', () => {
-    const partial = runReadiness({ accounts: true, ip: true });
+    const partial = runReadiness({ accountsReal: true, ownerIndependence: true });
     expect(partial.answered).toBe(2);
     expect(partial.complete).toBe(false);
-    expect(partial.score).toBe(READINESS_WEIGHTS.accounts + READINESS_WEIGHTS.ip);
+    expect(partial.score).toBe(28);
   });
 
   it('places each band at its documented boundary', () => {
-    const bandFor = (excluded: string[]) =>
+    const bandFor = (excluded: ReadinessKey[]) =>
       runReadiness(
         Object.fromEntries(READINESS_KEYS.map((k) => [k, !excluded.includes(k)])),
       ).band;
 
-    expect(bandFor([])).toBe('ready');
-    // 100 - 6 = 94, still at or above the 90 boundary
-    expect(bandFor(['ownerIndependence'])).toBe('ready');
-    // 100 - 6 - 8 = 86, below 90 but at or above 70
-    expect(bandFor(['ownerIndependence', 'loans'])).toBe('mostly');
+    // Bands are inclusive lower bounds: 90 / 70 / 45, checked top-down.
+    expect(bandFor([])).toBe('ready'); // 100
+    expect(bandFor(['disputes', 'loans'])).toBe('ready'); // exactly 90
+    expect(bandFor(['disputes', 'loans', 'ownership'])).toBe('mostly'); // 84
+    expect(bandFor(['accountsReal', 'concentration', 'disputes'])).toBe('mostly'); // exactly 70
+    expect(bandFor(['accountsReal', 'ownerIndependence', 'disputes'])).toBe('gaps'); // 68
+    expect(
+      bandFor(['accountsReal', 'ownerIndependence', 'concentration', 'customerContracts']),
+    ).toBe('gaps'); // 48
+    expect(
+      bandFor([
+        'accountsReal',
+        'ownerIndependence',
+        'concentration',
+        'customerContracts',
+        'disputes',
+      ]),
+    ).toBe('costly'); // 44
   });
 
-  it('lists gaps in question order', () => {
-    const r = runReadiness({ ...all(true), ip: false, accounts: false });
-    expect(r.gaps).toEqual(['accounts', 'ip']);
+  /* Heaviest first, so the reader starts where it pays. */
+  it('sorts gaps by weight, descending', () => {
+    const r = runReadiness({
+      ...all(true),
+      disputes: false,
+      accountsReal: false,
+      concentration: false,
+    });
+    expect(r.gaps.map((g) => g.key)).toEqual([
+      'accountsReal',
+      'concentration',
+      'disputes',
+    ]);
+    expect(r.gaps.map((g) => g.weight)).toEqual([14, 12, 4]);
+  });
+});
+
+describe('tax recovery', () => {
+  const base = { revenue: 1_200_000_000, size: 'sme' as const, subcontracted: 0, rd: 0 };
+
+  it('needs revenue and at least one deductible-type cost', () => {
+    expect(runTaxRecovery(base)).toBeNull();
+    expect(runTaxRecovery({ ...base, revenue: 0, subcontracted: 100 })).toBeNull();
+    expect(runTaxRecovery({ ...base, subcontracted: 300_000_000 })).not.toBeNull();
+    expect(runTaxRecovery({ ...base, rd: 40_000_000 })).not.toBeNull();
+  });
+
+  it('applies the local business tax rate for an SME', () => {
+    const r = runTaxRecovery({ ...base, subcontracted: 300_000_000, rd: 40_000_000 })!;
+    expect(r.pool).toBe(340_000_000);
+    expect(r.rate).toBeCloseTo(0.02, 10);
+    expect(r.includesInnovation).toBe(false);
+    expect(r.annual[0]).toBeCloseTo(340_000_000 * 0.02 * 0.3, 6);
+    expect(r.total[1]).toBeCloseTo(r.annual[1] * 5, 6);
+  });
+
+  it('adds the innovation contribution for a large company', () => {
+    const r = runTaxRecovery({
+      ...base,
+      size: 'large',
+      subcontracted: 300_000_000,
+      rd: 40_000_000,
+    })!;
+    expect(r.includesInnovation).toBe(true);
+    expect(r.rate).toBeCloseTo(0.023, 10);
+  });
+
+  /* Costs cannot plausibly exceed most of revenue; without the cap a typo
+     would produce a triumphant, absurd figure. */
+  it('caps the pool against revenue and says so', () => {
+    const r = runTaxRecovery({
+      revenue: 100_000_000,
+      size: 'sme',
+      subcontracted: 900_000_000,
+      rd: 0,
+    })!;
+    expect(r.pool).toBe(100_000_000 * TAX.poolCapOfRevenue);
+    expect(r.poolCapped).toBe(true);
+  });
+
+  it('does not flag a cap that did not bind', () => {
+    const r = runTaxRecovery({ ...base, subcontracted: 300_000_000 })!;
+    expect(r.poolCapped).toBe(false);
   });
 });
 
 describe('formatting', () => {
-  it('groups digits per locale and keeps one currency convention', () => {
+  it('groups digits per locale and labels the currency per locale', () => {
     expect(makeFormat('en').huf(180_000_000)).toBe('180,000,000 HUF');
-    expect(makeFormat('hu').huf(180_000_000)).toMatch(/^180\s000\s000 HUF$/);
+    expect(makeFormat('hu').huf(180_000_000)).toMatch(/^180\s000\s000 Ft$/);
   });
 
   it('writes the currency once in a range', () => {

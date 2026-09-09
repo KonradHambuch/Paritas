@@ -1,22 +1,37 @@
 ---
 import SectionHead from '../ui/SectionHead.astro';
 import { getDict, type Lang } from '../../i18n';
+
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const t = getDict(lang);
+
+/* Tax recovery is the only success-fee service, so it is the only one that
+   carries the badge. */
+const FEE_INDEX = 4;
 ---
+
 <section id="services" class="section">
   <div class="wrap">
     <SectionHead eyebrow={t.services.eyebrow} heading={t.services.heading} />
-    <div class="mt-[38px] grid gap-8 md:grid-cols-2 md:gap-[52px]">
+    <div class="mt-[38px] grid gap-9 md:grid-cols-3">
       {
-        t.services.items.map((s) => (
+        t.services.items.map((s, i) => (
           <div class="svc">
             <h3>{s.h}</h3>
+            {i === FEE_INDEX && (
+              <span class="mb-2.5 inline-block rounded-sm bg-ink px-2.5 py-1 font-sans text-[0.6875rem] uppercase tracking-[0.12em] text-white">
+                {t.services.feeBadge}
+              </span>
+            )}
             <p>{s.p}</p>
           </div>
         ))
       }
     </div>
+    <p
+      class="mt-[34px] border-t border-line pt-[22px] text-sm text-muted [&_b]:text-ink"
+      set:html={t.services.nameNote}
+    />
   </div>
 </section>

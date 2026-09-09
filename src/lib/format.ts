@@ -3,11 +3,11 @@ export type Lang = 'en' | 'hu';
 /**
  * Locale-aware formatting.
  *
- * Amounts are Hungarian forint. The currency is written as a trailing "HUF"
- * rather than through `style: 'currency'` on purpose: hu-HU renders HUF as
- * "Ft" and en-US as "HUF 180,000,000", while the reference design uses one
- * consistent "180 000 000 HUF" in both languages. Only the digit grouping is
- * locale-dependent — spaces in Hungarian, commas in English.
+ * Amounts are Hungarian forint, written with a trailing unit rather than
+ * through `style: 'currency'`, which would give "HUF 180,000,000" in English.
+ * Hungarian readers get "Ft", English readers "HUF" — the reference pages
+ * mixed the two, printing an English heading of "HUF 150,000,000" above
+ * results labelled "Ft".
  */
 export function makeFormat(lang: Lang) {
   const loc = lang === 'hu' ? 'hu-HU' : 'en-US';
@@ -17,12 +17,13 @@ export function makeFormat(lang: Lang) {
     maximumFractionDigits: 1,
   });
 
-  const huf = (n: number) => `${number.format(Math.round(n))} HUF`;
+  const unit = lang === 'hu' ? 'Ft' : 'HUF';
+  const huf = (n: number) => `${number.format(Math.round(n))} ${unit}`;
 
   return {
     lang,
     locale: loc,
-    /** "180 000 000 HUF" / "180,000,000 HUF" */
+    /** "180 000 000 Ft" / "180,000,000 HUF" */
     huf,
     /** A range sharing one currency suffix. */
     hufRange: (a: number, b: number) => `${number.format(Math.round(a))} – ${huf(b)}`,

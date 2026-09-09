@@ -17,7 +17,7 @@ interface Props {
 const { lang, title, description } = Astro.props;
 const t = getDict(lang);
 
-const site = Astro.site ?? new URL('https://paritas.eu');
+const site = Astro.site ?? new URL('https://cardoadvisory.com');
 const canonical = new URL(Astro.url.pathname, site).href;
 const other = otherLang(lang);
 
@@ -32,7 +32,7 @@ const ogImage = new URL(`/og-${lang}.png`, site).href;
 const orgJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
-  name: 'Paritas',
+  name: 'Cardo',
   url: site.href,
   email: t.contact.email,
   description: t.meta.description,
@@ -55,7 +55,7 @@ const orgJsonLd = {
     {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
 
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Paritas" />
+    <meta property="og:site_name" content="Cardo" />
     <meta property="og:title" content={title ?? t.meta.title} />
     <meta property="og:description" content={description ?? t.meta.description} />
     <meta property="og:url" content={canonical} />

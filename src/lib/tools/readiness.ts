@@ -1,8 +1,17 @@
-import { READINESS_BANDS, READINESS_KEYS, READINESS_WEIGHTS, type ReadinessKey } from './config';
+import {
+  READINESS_BANDS,
+  READINESS_KEYS,
+  READINESS_WEIGHTS,
+  type ReadinessKey,
+} from './config';
 
 export type ReadinessAnswers = Partial<Record<ReadinessKey, boolean>>;
-
 export type ReadinessBand = 'ready' | 'mostly' | 'gaps' | 'costly';
+
+export interface ReadinessGap {
+  key: ReadinessKey;
+  weight: number;
+}
 
 export interface ReadinessResult {
   /** Out of 100. */
@@ -11,28 +20,24 @@ export interface ReadinessResult {
   total: number;
   complete: boolean;
   band: ReadinessBand;
-  /** Keys answered "no", in question order. */
-  gaps: ReadinessKey[];
+  /** Answered "no", heaviest first — so the reader starts where it pays. */
+  gaps: ReadinessGap[];
 }
 
-/**
- * Diligence readiness self-check.
- *
- * Always returns a result so the caller can show progress while the visitor is
- * still answering; `complete` says whether the score is meaningful yet.
- */
 export function runReadiness(answers: ReadinessAnswers): ReadinessResult {
   let score = 0;
   let answered = 0;
-  const gaps: ReadinessKey[] = [];
+  const gaps: ReadinessGap[] = [];
 
   for (const key of READINESS_KEYS) {
     const value = answers[key];
     if (value === undefined) continue;
     answered += 1;
     if (value) score += READINESS_WEIGHTS[key];
-    else gaps.push(key);
+    else gaps.push({ key, weight: READINESS_WEIGHTS[key] });
   }
+
+  gaps.sort((a, b) => b.weight - a.weight);
 
   const band: ReadinessBand =
     score >= READINESS_BANDS.ready

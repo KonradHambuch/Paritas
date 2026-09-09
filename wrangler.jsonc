@@ -3,7 +3,7 @@
   // request is served straight from the built files. This replaces the
   // "Build output directory" field that the classic Pages UI had — on Workers
   // Builds the output directory is declared here instead.
-  "name": "paritas",
+  "name": "cardo",
   "compatibility_date": "2026-09-03",
   "assets": {
     "directory": "./dist/",
